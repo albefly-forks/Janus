@@ -67,7 +67,9 @@ namespace Rsdn.Janus.Mssql
 		/// </summary>
 		public IDataProvider CreateDataProvider()
 		{
-			return new SqlServerDataProvider("mssql", LinqToDB.DataProvider.SqlServer.SqlServerVersion.v2005);
+			return SqlServerTools.GetDataProvider(
+				LinqToDB.DataProvider.SqlServer.SqlServerVersion.v2005,
+				SqlServerProvider.SystemDataSqlClient);
 		}
 
 		/// <summary>

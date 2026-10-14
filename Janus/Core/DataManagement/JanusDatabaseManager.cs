@@ -4,6 +4,7 @@ using System.Data;
 using CodeJam.Extensibility;
 using CodeJam.Extensibility.Model;
 
+using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider;
 
@@ -70,7 +71,8 @@ namespace Rsdn.Janus
 		#region JanusDataContext class
 		private class JanusDataContext : DataConnection, IJanusDataContext
 		{
-			public JanusDataContext(IDataProvider dataProvider, string connectionString) : base(dataProvider, connectionString)
+			public JanusDataContext(IDataProvider dataProvider, string connectionString)
+				: base(new DataOptions().UseConnectionString(dataProvider, connectionString))
 			{
 				CommandTimeout = 0;
 			}

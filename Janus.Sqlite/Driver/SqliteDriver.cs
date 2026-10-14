@@ -70,7 +70,7 @@ namespace Rsdn.Janus.Sqlite
 		/// </summary>
 		public IDataProvider CreateDataProvider()
 		{
-			return new SQLiteDataProvider();
+			return SQLiteTools.GetDataProvider(SQLiteProvider.System);
 		}
 
 		/// <summary>

@@ -72,7 +72,7 @@ namespace Rsdn.Janus.Jet
 		/// </summary>
 		public IDataProvider CreateDataProvider()
 		{
-			return new AccessDataProvider();
+			return AccessTools.GetDataProvider(AccessVersion.Jet, AccessProvider.OleDb);
 		}
 
 		/// <summary>

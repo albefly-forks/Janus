@@ -76,7 +76,7 @@ namespace Rsdn.Janus.Firebird
 		/// </summary>
 		public IDataProvider CreateDataProvider()
 		{
-			return new FirebirdDataProvider();
+			return FirebirdTools.GetDataProvider(FirebirdVersion.v25);
 		}
 
 		/// <summary>

@@ -11,7 +11,7 @@
     <RootNamespace>Rsdn.Janus</RootNamespace>
     <AssemblyName>Janus-Model</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -282,44 +282,86 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CodeJam, Version=1.1.0.0, Culture=neutral, PublicKeyToken=7662d8fd5b220919, processorArchitecture=MSIL">
-      <HintPath>..\packages\CodeJam.1.3.0\lib\net45\CodeJam.dll</HintPath>
+    <Reference Include="CodeJam, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7662d8fd5b220919">
+      <HintPath>..\packages\CodeJam.5.0.0\lib\net462\CodeJam.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="CodeJam.Extensibility, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8da42d97776bc8d3, processorArchitecture=MSIL">
       <HintPath>..\packages\CodeJam.Extensibility.1.0.0-beta7\lib\net45\CodeJam.Extensibility.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="JetBrains.Annotations, Version=4242.42.42.42, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+      <HintPath>..\packages\JetBrains.Annotations.2026.2.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="linq2db, Version=1.8.2.0, Culture=neutral, PublicKeyToken=f19f8aed7feff67e, processorArchitecture=MSIL">
-      <HintPath>..\packages\linq2db.1.8.2\lib\net45\linq2db.dll</HintPath>
+    <Reference Include="linq2db, Version=6.5.0.0, Culture=neutral, PublicKeyToken=e41013125f9e410a">
+      <HintPath>..\packages\linq2db.6.5.0\lib\net462\linq2db.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.13, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.13\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.6.0.0\lib\net462\Microsoft.Bcl.HashCode.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\R.SAT\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Core.3.1.1\lib\net45\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Interfaces.3.1.1\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive, Version=7.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263">
+      <HintPath>..\packages\System.Reactive.7.0.0\lib\net472\System.Reactive.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.Reactive.Core, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263">
+      <HintPath>..\packages\System.Reactive.Core.6.1.0\lib\net472\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263">
+      <HintPath>..\packages\System.Reactive.Interfaces.6.1.0\lib\net472\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.1\lib\net461\System.Security.AccessControl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=10.0.0.13, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Security.Permissions.10.0.13\lib\net462\System.Security.Permissions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Theraot.Core, Version=3.2.11.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7">
+      <HintPath>..\packages\Theraot.Core.3.2.11\lib\net48\Theraot.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="TreeGrid3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\TreeGrid3\TreeGrid3.dll</HintPath>
@@ -375,4 +417,15 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Reactive.7.0.0\build\System.Reactive.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Reactive.7.0.0\build\System.Reactive.targets'))" />
+    <Error Condition="!Exists('..\packages\linq2db.Analyzers.6.5.0\build\linq2db.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\linq2db.Analyzers.6.5.0\build\linq2db.Analyzers.targets'))" />
+  </Target>
+  <Import Project="..\packages\System.Reactive.7.0.0\build\System.Reactive.targets" Condition="Exists('..\packages\System.Reactive.7.0.0\build\System.Reactive.targets')" />
+  <Import Project="..\packages\linq2db.Analyzers.6.5.0\build\linq2db.Analyzers.targets" Condition="Exists('..\packages\linq2db.Analyzers.6.5.0\build\linq2db.Analyzers.targets')" />
 </Project>
