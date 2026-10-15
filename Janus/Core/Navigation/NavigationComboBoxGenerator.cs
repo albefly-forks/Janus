@@ -19,6 +19,7 @@ namespace Rsdn.Janus
 
 		private readonly ComboBox _comboBox;
 		private readonly AsyncOperation _uiAsyncOperation;
+		private readonly IDisposable _dpiChangedSubscription;
 		private bool _suspendSelectionTracking;
 
 		public NavigationComboBoxGenerator(
@@ -36,6 +37,8 @@ namespace Rsdn.Janus
 			_comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			_comboBox.DrawItem += ComboBoxDrawItem;
 			_comboBox.SelectedIndexChanged += ComboBoxSelectedIndexChanged;
+			UpdateItemHeight();
+			_dpiChangedSubscription = DpiHelper.SubscribeDpiChanged(_comboBox, dpi => UpdateItemHeight());
 
 			UpdateContent();
 
@@ -49,6 +52,7 @@ namespace Rsdn.Janus
 		{
 			_comboBox.DrawItem -= ComboBoxDrawItem;
 			_comboBox.SelectedIndexChanged -= ComboBoxSelectedIndexChanged;
+			_dpiChangedSubscription.Dispose();
 		}
 
 		private void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -56,6 +60,16 @@ namespace Rsdn.Janus
 			if (!_suspendSelectionTracking)
 				Features.Instance.ActiveFeature =
 					((FeatureContainer)_comboBox.SelectedItem).Feature;
+		}
+
+		/// <summary>
+		/// Высота элемента должна вмещать картинку, размер которой зависит от DPI.
+		/// </summary>
+		private void UpdateItemHeight()
+		{
+			_comboBox.ItemHeight = Math.Max(
+				_comboBox.Font.Height,
+				DpiHelper.Scale(16, _comboBox.DeviceDpi));
 		}
 
 		private void ComboBoxDrawItem(object sender, DrawItemEventArgs e)
@@ -68,11 +82,15 @@ namespace Rsdn.Janus
 			var bounds = e.Bounds;
 			var cont = (FeatureContainer)_comboBox.Items[e.Index];
 
-			bounds.X += _leftMargin + cont.Level * Config.Instance.ForumDisplayConfig.GridIndent;
+			var dpi = _comboBox.DeviceDpi;
+			bounds.X += DpiHelper.Scale(
+				_leftMargin + cont.Level * Config.Instance.ForumDisplayConfig.GridIndent,
+				dpi);
 
 			var cd = new CellInfo[5];
 			var ni = new NodeInfo(_comboBox.ForeColor, _comboBox.BackColor, _comboBox.Font, false);
-			((IGetData)cont.Feature).GetData(ni, cd);
+			using (ImageDpiScope.Enter(dpi))
+				((IGetData)cont.Feature).GetData(ni, cd);
 
 			if (cd[0].Image != null)
 			{

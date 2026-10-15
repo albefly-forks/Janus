@@ -45,7 +45,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 		#region Customizable Properties
 		public Font TextFont
 		{
-			get { return DockPanel.Skin.AutoHideStripSkin.TextFont; }
+			get { return Rsdn.Janus.DpiHelper.GetFontForDpi(DockPanel.Skin.AutoHideStripSkin.TextFont, DeviceDpi); }
 		}
 
 		private static StringFormat _stringFormatTabHorizontal;
@@ -93,59 +93,59 @@ namespace WeifenLuo.WinFormsUI.Docking
 			}
 		}
 
-		private static int ImageHeight
+		private int ImageHeight
 		{
-			get { return _ImageHeight; }
+			get { return LogicalToDeviceUnits(_ImageHeight); }
 		}
 
-		private static int ImageWidth
+		private int ImageWidth
 		{
-			get { return _ImageWidth; }
+			get { return LogicalToDeviceUnits(_ImageWidth); }
 		}
 
-		private static int ImageGapTop
+		private int ImageGapTop
 		{
-			get { return _ImageGapTop; }
+			get { return LogicalToDeviceUnits(_ImageGapTop); }
 		}
 
-		private static int ImageGapLeft
+		private int ImageGapLeft
 		{
-			get { return _ImageGapLeft; }
+			get { return LogicalToDeviceUnits(_ImageGapLeft); }
 		}
 
-		private static int ImageGapRight
+		private int ImageGapRight
 		{
-			get { return _ImageGapRight; }
+			get { return LogicalToDeviceUnits(_ImageGapRight); }
 		}
 
-		private static int ImageGapBottom
+		private int ImageGapBottom
 		{
-			get { return _ImageGapBottom; }
+			get { return LogicalToDeviceUnits(_ImageGapBottom); }
 		}
 
-		private static int TextGapLeft
+		private int TextGapLeft
 		{
-			get { return _TextGapLeft; }
+			get { return LogicalToDeviceUnits(_TextGapLeft); }
 		}
 
-		private static int TextGapRight
+		private int TextGapRight
 		{
-			get { return _TextGapRight; }
+			get { return LogicalToDeviceUnits(_TextGapRight); }
 		}
 
-		private static int TabGapTop
+		private int TabGapTop
 		{
-			get { return _TabGapTop; }
+			get { return LogicalToDeviceUnits(_TabGapTop); }
 		}
 
-		private static int TabGapLeft
+		private int TabGapLeft
 		{
-			get { return _TabGapLeft; }
+			get { return LogicalToDeviceUnits(_TabGapLeft); }
 		}
 
-		private static int TabGapBetween
+		private int TabGapBetween
 		{
-			get { return _TabGapBetween; }
+			get { return LogicalToDeviceUnits(_TabGapBetween); }
 		}
 
 		private static Pen PenTabBorder

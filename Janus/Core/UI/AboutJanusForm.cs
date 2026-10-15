@@ -34,6 +34,7 @@ namespace Rsdn.Janus
 		{
 			_provider = provider;
 			InitializeComponent();
+			DesignerImages.Apply(this);
 
 			CustomInitializeComponent();
 		}

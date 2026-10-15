@@ -7,7 +7,6 @@ namespace Rsdn.Janus
 	{
 		public const string ApplicationName = "RSDN@Home";
 
-		public const string Release = "alpha 5";
 		public const string Company = "RSDN Team";
 		public const string Copyright = "Copyright © by RSDN Team (http://rsdn.ru), 2002-2012";
 
@@ -29,7 +28,7 @@ namespace Rsdn.Janus
 				.Version;
 
 			Version = new Version(fileVerStr);
-			FullVersion = $"{Version.Major}.{Version.Minor}.{Version.Build} {Release} {Resources.Revision} {Version.Revision}";
+			FullVersion = Version.ToString();
 			NameWithVersion = $"{ApplicationName} {Resources.Version.ToLower()} {FullVersion}";
 			NameWithVersionAndCopyright = $"{NameWithVersion}, {Copyright}";
 		}

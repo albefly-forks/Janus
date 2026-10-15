@@ -17,7 +17,7 @@ namespace Rsdn.Janus
 	internal class Navigator : IInitable
 	{
 		private readonly NavigationDummyForm _form;
-		private readonly ImageList _featureImages = new ImageList();
+		private readonly DpiImageList _featureImages = new DpiImageList();
 		private readonly IServiceProvider _serviceProvider;
 		private readonly AsyncOperation _uiAsyncOperation;
 
@@ -111,21 +111,19 @@ namespace Rsdn.Janus
 		{
 			const string prefix = @"NavTree\";
 
-			_featureImages.ColorDepth = ColorDepth.Depth32Bit;
-
 			var styleImageManager = _serviceProvider.GetService<IStyleImageManager>();
 
 			Features.Instance.OutboxImageIndex =
-				styleImageManager.AppendImage(prefix + "Outcomings", StyleImageType.ConstSize, _featureImages);
+				_featureImages.Add(styleImageManager, prefix + "Outcomings", StyleImageType.ConstSize);
 			Features.Instance.ForumsImageIndex =
-				styleImageManager.AppendImage(prefix + "Incomings", StyleImageType.ConstSize, _featureImages);
+				_featureImages.Add(styleImageManager, prefix + "Incomings", StyleImageType.ConstSize);
 			Features.Instance.FavoritesImageIndex =
-				styleImageManager.AppendImage(prefix + "Favorites", StyleImageType.ConstSize, _featureImages);
+				_featureImages.Add(styleImageManager, prefix + "Favorites", StyleImageType.ConstSize);
 			Features.Instance.SearchImageIndex =
-				styleImageManager.AppendImage(prefix + "Search", StyleImageType.ConstSize, _featureImages);
+				_featureImages.Add(styleImageManager, prefix + "Search", StyleImageType.ConstSize);
 			Features.Instance.UnsubscribedFolderImageIndex =
-				styleImageManager.AppendImage(prefix + "Unsubscribed", StyleImageType.ConstSize, _featureImages);
-			_form.FeatureImages = _featureImages;
+				_featureImages.Add(styleImageManager, prefix + "Unsubscribed", StyleImageType.ConstSize);
+			_form.FeatureImages = _featureImages.AttachTo(_form).ImageList;
 		}
 
 		#region Select Next/Previous

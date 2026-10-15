@@ -11,7 +11,7 @@
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FavoritesSelectFolderForm));
-			this._folderView = new Rsdn.TreeGrid.TreeGrid();
+			this._folderView = new Rsdn.Janus.JanusGrid();
 			this._folderCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this._commentCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this._okBtn = new System.Windows.Forms.Button();
@@ -85,6 +85,8 @@
 			// 
 			// FavoritesSelectFolderForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._okBtn;
 			resources.ApplyResources(this, "$this");
 			this.CancelButton = this._cancelBtn;
@@ -113,6 +115,6 @@
 		private System.Windows.Forms.ColumnHeader _folderCol;
 		private System.Windows.Forms.GroupBox _folderListGroup;
 		
-		private Rsdn.TreeGrid.TreeGrid _folderView;
+		private Rsdn.Janus.JanusGrid _folderView;
 	}
 }

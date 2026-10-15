@@ -27,7 +27,8 @@ namespace Rsdn.Janus
 			{
 				var styleImageSvc = provider.GetService<IStyleImageManager>();
 				if (styleImageSvc != null)
-					_errorPictureBox.Image = styleImageSvc.GetImage("error", StyleImageType.ConstSize);
+					styleImageSvc.BindImage(
+						_errorPictureBox, "error", StyleImageType.ConstSize, img => _errorPictureBox.Image = img);
 				_bugReportButton.Enabled = true;
 			}
 

@@ -10,145 +10,181 @@ using CodeJam.Services;
 
 namespace Rsdn.Janus
 {
+	/// <summary>
+	/// Картинки деревьев форумов и сообщений. Картинки отдаются для DPI,
+	/// заданного <see cref="ImageDpiScope"/> (его устанавливает грид при отрисовке).
+	/// </summary>
 	[Service(typeof (IForumImageManager))]
 	internal class ForumImageManager : IForumImageManager
 	{
-		private readonly Image _msgImage;
-		private readonly Image _msgUnreadImage;
-		private readonly Image _msgArticleImage;
-		private readonly Image _msgArticleUnreadImage;
-		private readonly Image _mdrImage;
-		private readonly Image _mdrRepliesImage;
-		private readonly Image _closedImage;
-		private readonly Image _unreadRepliesToMeImage;
-
-		private readonly ILazyDictionary<MsgImageKey, Image> _images;
-
-		private readonly Image[] _dayOfWeekImages = new Image[7];
-		private readonly Image[] _outdatedDayOfWeekImages = new Image[7];
-
-		private static readonly Dictionary<UserClass, Image> _userImages =
-			new Dictionary<UserClass, Image>();
-
-		private readonly Image _markImage;
-		private readonly Image _marksImage;
-		private readonly Image _autoReadImage;
-
-		private readonly Image _forumImage;
-		private readonly Image _forumUnreadImage;
-		private readonly Image _inTopImage;
-		private readonly ILazyDictionary<ForumImageKey, Image> _forumImages;
+		private readonly IStyleImageManager _styler;
+		private readonly Dictionary<int, DpiImageSet> _sets = new Dictionary<int, DpiImageSet>();
 
 		public ForumImageManager(IServiceProvider provider)
 		{
-			var styler = provider.GetRequiredService<IStyleImageManager>();
-			const string prefix = @"MessageTree\";
-
-			_msgImage = styler.GetImage(prefix + "Msg", StyleImageType.ConstSize);
-			_msgUnreadImage = styler.GetImage(prefix + "MsgUnread", StyleImageType.ConstSize);
-			_msgArticleImage = styler.GetImage(prefix + "MsgArticle", StyleImageType.ConstSize);
-			_msgArticleUnreadImage = styler.GetImage(prefix + "MsgArticleUnread", StyleImageType.ConstSize);
-
-			_mdrImage = styler.GetImage(prefix + "Moderatorial", StyleImageType.ConstSize);
-			_mdrRepliesImage = styler.GetImage(prefix + "Moderatorials", StyleImageType.ConstSize);
-
-			_closedImage = styler.GetImage(prefix + "Closed", StyleImageType.ConstSize);
-			_unreadRepliesToMeImage = styler.GetImage(prefix + "UnreadRepliesToMe", StyleImageType.ConstSize);
-
-			for (var i = 0; i < 7; i++)
-			{
-				var si = i.ToString();
-				_dayOfWeekImages[i] = styler.GetImage(prefix + "WD" + si, StyleImageType.ConstSize);
-				_outdatedDayOfWeekImages[i] = styler.GetImage(prefix + "WDOUT" + si, StyleImageType.ConstSize);
-			}
-
-			//иконки для классов пользователей
-			_userImages[UserClass.User] = styler.GetImage(prefix + "User", StyleImageType.ConstSize);
-			_userImages[UserClass.Anonym] = styler.GetImage(prefix + "UserAnonym", StyleImageType.ConstSize);
-			_userImages[UserClass.Team] = styler.GetImage(prefix + "UserTeam", StyleImageType.ConstSize);
-			_userImages[UserClass.Moderator] = styler.GetImage(prefix + "UserModerator",
-				StyleImageType.ConstSize);
-			_userImages[UserClass.Admin] = styler.GetImage(prefix + "UserAdmin", StyleImageType.ConstSize);
-			_userImages[UserClass.Expert] = styler.GetImage(prefix + "UserExpert", StyleImageType.ConstSize);
-			_userImages[UserClass.Group] = styler.GetImage(prefix + "UserGroup", StyleImageType.ConstSize);
-
-			_markImage = styler.GetImage(prefix + "Mark", StyleImageType.ConstSize);
-			_marksImage = styler.GetImage(prefix + "Marks", StyleImageType.ConstSize);
-
-			_autoReadImage = styler.GetImage(prefix + "ReadReplies", StyleImageType.ConstSize);
-
-			const string navPrefix = @"NavTree\";
-			_forumImage = styler.GetImage(navPrefix + "Forum", StyleImageType.ConstSize);
-			_forumUnreadImage = styler.GetImage(navPrefix + "ForumUnread", StyleImageType.ConstSize);
-			_inTopImage = styler.GetImage(navPrefix + "InTopSign", StyleImageType.ConstSize);
-
-			_images = LazyDictionary.Create<MsgImageKey, Image>(CreateMsgImage, true);
-			_forumImages = LazyDictionary.Create<ForumImageKey, Image>(CreateForumImage, true);
+			_styler = provider.GetRequiredService<IStyleImageManager>();
 		}
 
-		private Image CreateMsgImage(MsgImageKey key)
+		private DpiImageSet CurrentSet
 		{
-			var baseImage =
-				key.Type == MessageType.Ordinal
-					? key.HasUnreaded == MessageFlagExistence.None
-						? _msgImage
-						: _msgUnreadImage
-					: key.HasUnreaded == MessageFlagExistence.None
-						? _msgArticleImage
-						: _msgArticleUnreadImage;
-			if (!key.HasUnreadRepliesToMe && key.HasModeratorials == MessageFlagExistence.None && !key.Closed)
-				return baseImage;
-			var bmp = new Bitmap(16, 16, PixelFormat.Format32bppArgb);
-			using (var grp = Graphics.FromImage(bmp))
+			get
 			{
-				grp.CompositingMode = CompositingMode.SourceOver;
-				grp.CompositingQuality = CompositingQuality.HighQuality;
-				grp.DrawImage(baseImage, 0, 0, 16, 16);
-
-				if (key.Closed)
-					grp.DrawImage(_closedImage, 0, 0, 16, 16);
-
-				if (key.HasModeratorials != MessageFlagExistence.None)
+				var dpi = ImageDpiScope.Current;
+				DpiImageSet set;
+				if (!_sets.TryGetValue(dpi, out set))
 				{
-					var img =
-						key.HasModeratorials == MessageFlagExistence.OnMessage
-							? _mdrImage
-							: _mdrRepliesImage;
-					grp.DrawImage(img, 0, 0, 16, 16);
+					set = new DpiImageSet(_styler, dpi);
+					_sets.Add(dpi, set);
+				}
+				return set;
+			}
+		}
+
+		#region DpiImageSet class
+		/// <summary>
+		/// Картинки для одного значения DPI.
+		/// </summary>
+		private sealed class DpiImageSet
+		{
+			private const int _logicalImageSize = 16;
+
+			private readonly int _imageSize;
+
+			private readonly Image _msgImage;
+			private readonly Image _msgUnreadImage;
+			private readonly Image _msgArticleImage;
+			private readonly Image _msgArticleUnreadImage;
+			private readonly Image _mdrImage;
+			private readonly Image _mdrRepliesImage;
+			private readonly Image _closedImage;
+			private readonly Image _unreadRepliesToMeImage;
+
+			private readonly Image[] _dayOfWeekImages = new Image[7];
+			private readonly Image[] _outdatedDayOfWeekImages = new Image[7];
+
+			private readonly Dictionary<UserClass, Image> _userImages = new Dictionary<UserClass, Image>();
+
+			private readonly Image _forumImage;
+			private readonly Image _forumUnreadImage;
+			private readonly Image _inTopImage;
+
+			public DpiImageSet(IStyleImageManager styler, int dpi)
+			{
+				_imageSize = DpiHelper.Scale(_logicalImageSize, dpi);
+
+				const string prefix = @"MessageTree\";
+				Func<string, Image> get = name => styler.GetImage(name, StyleImageType.ConstSize, dpi);
+
+				_msgImage = get(prefix + "Msg");
+				_msgUnreadImage = get(prefix + "MsgUnread");
+				_msgArticleImage = get(prefix + "MsgArticle");
+				_msgArticleUnreadImage = get(prefix + "MsgArticleUnread");
+
+				_mdrImage = get(prefix + "Moderatorial");
+				_mdrRepliesImage = get(prefix + "Moderatorials");
+
+				_closedImage = get(prefix + "Closed");
+				_unreadRepliesToMeImage = get(prefix + "UnreadRepliesToMe");
+
+				for (var i = 0; i < 7; i++)
+				{
+					var si = i.ToString();
+					_dayOfWeekImages[i] = get(prefix + "WD" + si);
+					_outdatedDayOfWeekImages[i] = get(prefix + "WDOUT" + si);
 				}
 
-				if (key.HasUnreadRepliesToMe)
-					grp.DrawImage(_unreadRepliesToMeImage, 0, 0, 16, 16);
+				//иконки для классов пользователей
+				_userImages[UserClass.User] = get(prefix + "User");
+				_userImages[UserClass.Anonym] = get(prefix + "UserAnonym");
+				_userImages[UserClass.Team] = get(prefix + "UserTeam");
+				_userImages[UserClass.Moderator] = get(prefix + "UserModerator");
+				_userImages[UserClass.Admin] = get(prefix + "UserAdmin");
+				_userImages[UserClass.Expert] = get(prefix + "UserExpert");
+				_userImages[UserClass.Group] = get(prefix + "UserGroup");
+
+				MarkImage = get(prefix + "Mark");
+				MarksImage = get(prefix + "Marks");
+
+				AutoReadImage = get(prefix + "ReadReplies");
+
+				const string navPrefix = @"NavTree\";
+				_forumImage = get(navPrefix + "Forum");
+				_forumUnreadImage = get(navPrefix + "ForumUnread");
+				_inTopImage = get(navPrefix + "InTopSign");
+
+				MsgImages = LazyDictionary.Create<MsgImageKey, Image>(CreateMsgImage, true);
+				ForumImages = LazyDictionary.Create<ForumImageKey, Image>(CreateForumImage, true);
 			}
-			return bmp;
-		}
 
-		private Image GetMsgDateImage(int index, bool outdated)
-		{
-			if (index < 0 || index > 6)
-				throw new ArgumentOutOfRangeException(nameof(index));
-			return (outdated ? _outdatedDayOfWeekImages : _dayOfWeekImages)[index];
-		}
+			public ILazyDictionary<MsgImageKey, Image> MsgImages { get; }
+			public ILazyDictionary<ForumImageKey, Image> ForumImages { get; }
+			public Image MarkImage { get; }
+			public Image MarksImage { get; }
+			public Image AutoReadImage { get; }
 
-		private Image CreateForumImage(ForumImageKey key)
-		{
-			var baseImage = key.HasUnread ? _forumUnreadImage : _forumImage;
-			if (!key.InTop && !key.HasUnreadRepliesToMe)
-				return baseImage;
-			var bmp = new Bitmap(16, 16, PixelFormat.Format32bppArgb);
-			using (var grp = Graphics.FromImage(bmp))
+			public Image GetUserImage(UserClass userClass)
 			{
-				grp.CompositingMode = CompositingMode.SourceOver;
-				grp.CompositingQuality = CompositingQuality.HighQuality;
-				grp.DrawImage(baseImage, 0, 0, 16, 16);
-
-				if (key.InTop)
-					grp.DrawImage(_inTopImage, 0, 0, 16, 16);
-				if (key.HasUnreadRepliesToMe)
-					grp.DrawImage(_unreadRepliesToMeImage, 0, 0, 16, 16);
+				return _userImages[userClass];
 			}
-			return bmp;
+
+			public Image GetMsgDateImage(int index, bool outdated)
+			{
+				if (index < 0 || index > 6)
+					throw new ArgumentOutOfRangeException(nameof(index));
+				return (outdated ? _outdatedDayOfWeekImages : _dayOfWeekImages)[index];
+			}
+
+			private Bitmap Compose(Image baseImage, params Image[] overlays)
+			{
+				var bmp = new Bitmap(_imageSize, _imageSize, PixelFormat.Format32bppArgb);
+				using (var grp = Graphics.FromImage(bmp))
+				{
+					grp.CompositingMode = CompositingMode.SourceOver;
+					grp.CompositingQuality = CompositingQuality.HighQuality;
+					grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
+					grp.DrawImage(baseImage, 0, 0, _imageSize, _imageSize);
+					foreach (var overlay in overlays)
+						if (overlay != null)
+							grp.DrawImage(overlay, 0, 0, _imageSize, _imageSize);
+				}
+				return bmp;
+			}
+
+			private Image CreateMsgImage(MsgImageKey key)
+			{
+				var baseImage =
+					key.Type == MessageType.Ordinal
+						? key.HasUnreaded == MessageFlagExistence.None
+							? _msgImage
+							: _msgUnreadImage
+						: key.HasUnreaded == MessageFlagExistence.None
+							? _msgArticleImage
+							: _msgArticleUnreadImage;
+				if (!key.HasUnreadRepliesToMe && key.HasModeratorials == MessageFlagExistence.None && !key.Closed)
+					return baseImage;
+				return Compose(
+					baseImage,
+					key.Closed ? _closedImage : null,
+					key.HasModeratorials == MessageFlagExistence.None
+						? null
+						: key.HasModeratorials == MessageFlagExistence.OnMessage
+							? _mdrImage
+							: _mdrRepliesImage,
+					key.HasUnreadRepliesToMe ? _unreadRepliesToMeImage : null);
+			}
+
+			private Image CreateForumImage(ForumImageKey key)
+			{
+				var baseImage = key.HasUnread ? _forumUnreadImage : _forumImage;
+				if (!key.InTop && !key.HasUnreadRepliesToMe)
+					return baseImage;
+				return Compose(
+					baseImage,
+					key.InTop ? _inTopImage : null,
+					key.HasUnreadRepliesToMe ? _unreadRepliesToMeImage : null);
+			}
 		}
+		#endregion
 
 		#region IForumImageManager Members
 		public Image GetMessageImage(
@@ -159,7 +195,7 @@ namespace Rsdn.Janus
 			bool closed)
 		{
 			return
-				_images[new MsgImageKey(type, hasUnreaded, hasUnreadRepliesToMe, hasModeratorials, closed)];
+				CurrentSet.MsgImages[new MsgImageKey(type, hasUnreaded, hasUnreadRepliesToMe, hasModeratorials, closed)];
 		}
 
 		private static bool IsMsgOutdated(DateTime date)
@@ -170,12 +206,12 @@ namespace Rsdn.Janus
 
 		public Image GetMessageDateImage(DateTime date)
 		{
-			return GetMsgDateImage((int)date.DayOfWeek, IsMsgOutdated(date));
+			return CurrentSet.GetMsgDateImage((int)date.DayOfWeek, IsMsgOutdated(date));
 		}
 
 		public Image GetUserImage(UserClass userClass)
 		{
-			return _userImages[userClass];
+			return CurrentSet.GetUserImage(userClass);
 		}
 
 		public Image GetMarkImage(MessageFlagExistence existence)
@@ -185,9 +221,9 @@ namespace Rsdn.Janus
 				case MessageFlagExistence.None:
 					return null;
 				case MessageFlagExistence.OnMessage:
-					return _markImage;
+					return CurrentSet.MarkImage;
 				case MessageFlagExistence.OnChildren:
-					return _marksImage;
+					return CurrentSet.MarksImage;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(existence));
 			}
@@ -195,12 +231,12 @@ namespace Rsdn.Janus
 
 		public Image GetAutoReadImage(MessageFlagExistence existence)
 		{
-			return existence == MessageFlagExistence.None ? null : _autoReadImage;
+			return existence == MessageFlagExistence.None ? null : CurrentSet.AutoReadImage;
 		}
 
 		public Image GetForumImage(bool hasUnread, bool inTop, bool hasUnreadRepliesToMe)
 		{
-			return _forumImages[new ForumImageKey(hasUnread, inTop, hasUnreadRepliesToMe)];
+			return CurrentSet.ForumImages[new ForumImageKey(hasUnread, inTop, hasUnreadRepliesToMe)];
 		}
 		#endregion
 

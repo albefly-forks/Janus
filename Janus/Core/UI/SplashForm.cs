@@ -14,12 +14,12 @@ namespace Rsdn.Janus
 	/// </summary>
 	public partial class SplashForm : Form, IBootTimeInformer, IProgressService, IProgressVisualizer
 	{
-		private const int _moduleImageSize = 32;
-		private const int _moduleItemWidth = 64;
-		private const int _moduleTopShift = 8;
-		private const int _moduleBottomShift = 8;
-		private const int _moduleItemHeight = 80 - _moduleTopShift - _moduleBottomShift;
-		private const int _moduleInterval = 8;
+		// Размеры заданы в логических единицах (96 DPI)
+		private int _moduleImageSize => LogicalToDeviceUnits(32);
+		private int _moduleItemWidth => LogicalToDeviceUnits(64);
+		private int _moduleTopShift => LogicalToDeviceUnits(8);
+		private int _moduleItemHeight => LogicalToDeviceUnits(80 - 8 - 8);
+		private int _moduleInterval => LogicalToDeviceUnits(8);
 
 		private readonly List<ExtensionData> _extData = new List<ExtensionData>();
 		private readonly AsyncOperation _asyncOp;
@@ -36,6 +36,7 @@ namespace Rsdn.Janus
 			_asyncOp = AsyncHelper.CreateOperation();
 
 			InitializeComponent();
+			DesignerImages.Apply(this);
 
 			Text = ApplicationInfo.ApplicationName;
 			_versionLabel.Text = ApplicationInfo.FullVersion;

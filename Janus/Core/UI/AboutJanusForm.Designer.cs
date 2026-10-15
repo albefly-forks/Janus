@@ -120,6 +120,8 @@ namespace Rsdn.Janus
 			// 
 			// AboutJanusForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._okButton;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this._okButton;

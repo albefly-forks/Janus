@@ -32,6 +32,8 @@
 			// 
 			// SmilesToolbar
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.Name = "SmilesToolbar";
 			this.Size = new System.Drawing.Size(480, 104);
 		}

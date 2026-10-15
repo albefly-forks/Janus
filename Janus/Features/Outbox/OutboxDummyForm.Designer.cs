@@ -16,7 +16,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OutboxDummyForm));
-			this._grid = new Rsdn.TreeGrid.TreeGrid();
+			this._grid = new Rsdn.Janus.JanusGrid();
 			this._forumCol = new System.Windows.Forms.ColumnHeader();
 			this._subjectCol = new System.Windows.Forms.ColumnHeader();
 			this._addInfoCol = new System.Windows.Forms.ColumnHeader();
@@ -72,6 +72,8 @@
 			// 
 			// OutboxDummyForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.Controls.Add(this._pnlFeatureView);
 			this.Name = "OutboxDummyForm";
 			resources.ApplyResources(this, "$this");
@@ -87,6 +89,6 @@
 		private System.Windows.Forms.ContextMenuStrip _contextMenuStrip;
 		private System.Windows.Forms.Panel _pnlFeatureView;
 
-		private Rsdn.TreeGrid.TreeGrid _grid;
+		private Rsdn.Janus.JanusGrid _grid;
 	}
 }

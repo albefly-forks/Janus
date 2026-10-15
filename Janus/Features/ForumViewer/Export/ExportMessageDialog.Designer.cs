@@ -152,6 +152,8 @@
 			// 
 			// ExportMessageDialog
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._okButton;
 			resources.ApplyResources(this, "$this");
 			this.CancelButton = this._cancelButton;

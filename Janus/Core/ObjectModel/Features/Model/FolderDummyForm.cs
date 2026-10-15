@@ -21,9 +21,9 @@ namespace Rsdn.Janus
 
 			InitializeComponent();
 
-			_pictureBox.Image = provider
+			provider
 				.GetRequiredService<IStyleImageManager>()
-				.GetImage("folder", StyleImageType.ConstSize);
+				.BindImage(_pictureBox, "folder", StyleImageType.ConstSize, img => _pictureBox.Image = img);
 			_label.Text = folderFeature.Description;
 		}
 

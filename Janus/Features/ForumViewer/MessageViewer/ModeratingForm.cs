@@ -11,7 +11,7 @@ namespace Rsdn.Janus
 {
 	internal partial class ModeratingForm : JanusBaseForm
 	{
-		private readonly ImageList _images = new ImageList();
+		private readonly DpiImageList _images = new DpiImageList();
 		private readonly int _mdrDelImage;
 		private readonly int _mdrExtractImage;
 		private readonly int _mdrLeaveImage;
@@ -32,35 +32,18 @@ namespace Rsdn.Janus
 				throw new ArgumentNullException(nameof(provider));
 
 			var styleMgr = provider.GetRequiredService<IStyleImageManager>();
-			_mdrExtractImage = styleMgr.AppendImage(
-				@"MessageViewer\MdrExtract",
-				StyleImageType.ConstSize,
-				_images);
-			_mdrMoveImage = styleMgr.AppendImage(
-				@"MessageViewer\MdrMove",
-				StyleImageType.ConstSize,
-				_images);
-			_mdrDelImage = styleMgr.AppendImage(
-				"del",
-				StyleImageType.Small,
-				_images);
-			_mdrLeaveImage = styleMgr.AppendImage(
-				@"MessageViewer\MdrLeave",
-				StyleImageType.ConstSize,
-				_images);
-			_mdrCloseTopicImage = styleMgr.AppendImage(
-				@"MessageViewer\MdrCloseTopic",
-				StyleImageType.ConstSize,
-				_images);
-			_mdrOpenTopicImage = styleMgr.AppendImage(
-				@"MessageViewer\MdrOpenTopic",
-				StyleImageType.ConstSize,
-				_images);
+			_mdrExtractImage = _images.Add(styleMgr, @"MessageViewer\MdrExtract", StyleImageType.ConstSize);
+			_mdrMoveImage = _images.Add(styleMgr, @"MessageViewer\MdrMove", StyleImageType.ConstSize);
+			_mdrDelImage = _images.Add(styleMgr, "del", StyleImageType.Small);
+			_mdrLeaveImage = _images.Add(styleMgr, @"MessageViewer\MdrLeave", StyleImageType.ConstSize);
+			_mdrCloseTopicImage = _images.Add(styleMgr, @"MessageViewer\MdrCloseTopic", StyleImageType.ConstSize);
+			_mdrOpenTopicImage = _images.Add(styleMgr, @"MessageViewer\MdrOpenTopic", StyleImageType.ConstSize);
 
 			//_msg = DatabaseManager.GetMessagesList(new[] { msgId })[0];
 			InitializeComponent();
+			DpiHelper.EnableColumnScalingForChildren(this);
 
-			_moderatorialsList.SmallImageList = _images;
+			_moderatorialsList.SmallImageList = _images.AttachTo(_moderatorialsList).ImageList;
 
 			using (var db = provider.CreateDBContext())
 			{

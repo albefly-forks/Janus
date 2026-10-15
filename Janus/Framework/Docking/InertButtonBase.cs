@@ -18,6 +18,14 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get;
 		}
 
+		/// <summary>
+		/// Вариант <see cref="Image"/> для DPI монитора кнопки.
+		/// </summary>
+		public Bitmap ScaledImage
+		{
+			get { return DpiResources.ForDpi(Image, DeviceDpi); }
+		}
+
 		private bool m_isMouseOver;
 		protected bool IsMouseOver
 		{
@@ -34,7 +42,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		protected override Size DefaultSize
 		{
-			get { return Resources.DockPane_Close.Size; }
+			get { return DpiResources.Get("DockPane_Close", DeviceDpi).Size; }
 		}
 
 		protected override void OnMouseMove(MouseEventArgs e)
@@ -76,17 +84,17 @@ namespace WeifenLuo.WinFormsUI.Docking
 				colorMap[0].OldColor = Color.FromArgb(0, 0, 0);
 				colorMap[0].NewColor = ForeColor;
 				colorMap[1] = new ColorMap();
-				colorMap[1].OldColor = Image.GetPixel(0, 0);
+				colorMap[1].OldColor = ScaledImage.GetPixel(0, 0);
 				colorMap[1].NewColor = Color.Transparent;
 
 				imageAttributes.SetRemapTable(colorMap);
 
 				e.Graphics.DrawImage(
-									Image,
-									new Rectangle(0, 0, Image.Width, Image.Height),
+									ScaledImage,
+									new Rectangle(0, 0, ScaledImage.Width, ScaledImage.Height),
 									0, 0,
-									Image.Width,
-									Image.Height,
+									ScaledImage.Width,
+									ScaledImage.Height,
 									GraphicsUnit.Pixel,
 									imageAttributes);
 			}

@@ -25,7 +25,9 @@ namespace Rsdn.Janus
 		private readonly List<ITickerIndicator> _indicators = new List<ITickerIndicator>();
 		private readonly TextIndicator _syncIndicator = new TextIndicator();
 		private readonly TextIndicator _unreadMsgIndicator = new TextIndicator();
-		private readonly Image _backImage;
+		private Image _backImage;
+		private int _imagesDpi;
+		private static readonly Font _indicatorFont = new Font("Arial", 6, FontStyle.Bold);
 		private int _fixX;
 		private int _fixY;
 		private int _initFixX;
@@ -34,7 +36,9 @@ namespace Rsdn.Janus
 		private static IDisposable _startSyncSubscription;
 		private static IDisposable _endSyncSubscription;
 		private static Ticker _instance;
-		private const int _stickySpace = 12;
+		private const int _logicalStickySpace = 12;
+
+		private int _stickySpace => LogicalToDeviceUnits(_logicalStickySpace);
 
 		public static Ticker Instance =>
 			_instance
@@ -55,17 +59,12 @@ namespace Rsdn.Janus
 			BorderColor = Color.White;
 			//			_janusApplication = ApplicationManager.Instance;
 			FormBorderStyle = FormBorderStyle.FixedToolWindow;
-			Size = new Size(160, 32);
 			TopMost = true;
 			ShowInTaskbar = false;
 
 			StartPosition = FormStartPosition.Manual;
 
 			SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
-			_backImage = new Bitmap(
-				Assembly
-					.GetAssembly(GetType())
-					.GetRequiredResourceStream("Rsdn.Janus.Core.Ticker.tickerbg.png"));
 
 			BackColor = Color.FromArgb(255, 0, 255);
 			TransparencyKey = BackColor;
@@ -86,34 +85,79 @@ namespace Rsdn.Janus
 			_indicators.Add(_syncIndicator);
 			_syncIndicator.Owner = this;
 			_syncIndicator.Text = "СИНХ";
-			_syncIndicator.Font = new Font("Arial", 6, FontStyle.Bold);
 			_syncIndicator.ForeColor = Color.FromArgb(0, 255, 80);
 			_syncIndicator.BackColor = Color.Transparent;
-			_syncIndicator.Bounds = new Rectangle(3, 3, 27, 8);
 
 			_indicators.Add(_unreadMsgIndicator);
 			_unreadMsgIndicator.Owner = this;
 			_unreadMsgIndicator.Text = "000";
-			_unreadMsgIndicator.Font = new Font("Arial", 6, FontStyle.Bold);
 			_unreadMsgIndicator.ForeColor = Color.FromArgb(255, 255, 0);
 			_unreadMsgIndicator.BackColor = Color.Transparent;
-			_unreadMsgIndicator.OnImage = new Bitmap(
-				Assembly
-				.GetAssembly(GetType())
-				.GetRequiredResourceStream("Rsdn.Janus.Core.Ticker.urmsgson.png"));
-			_unreadMsgIndicator.OffImage = new Bitmap(
-				Assembly
-					.GetAssembly(GetType())
-					.GetRequiredResourceStream("Rsdn.Janus.Core.Ticker.urmsgsoff.png"));
 			//unreadMsgIndicator.On = true;
-			_unreadMsgIndicator.Bounds = new Rectangle(33, 3, 60, 8);
 
+			ApplyDpi(DeviceDpi);
 			UpdateUnread();
 		}
 
+		#region High DPI
+		/// <summary>
+		/// Размеры и картинки тикера для DPI монитора, на котором он находится.
+		/// Тикер - растровая картинка с нарисованной рамкой, поэтому он масштабируется
+		/// ступенями заготовленных картинок (100%, 150%, 200%), а не произвольно:
+		/// иначе при пересчете по краям появляется кайма цвета TransparencyKey.
+		/// </summary>
+		private void ApplyDpi(int dpi)
+		{
+			if (_imagesDpi == dpi)
+				return;
+			_imagesDpi = dpi;
+
+			var percent = dpi * 100 / DpiHelper.LogicalDpi;
+			var artPercent = percent < 125 ? 100 : percent < 175 ? 150 : 200;
+			var artDpi = DpiHelper.LogicalDpi * artPercent / 100;
+			var suffix = artPercent == 100 ? string.Empty : "_" + artPercent;
+
+			Func<int, int> scale = value => DpiHelper.Scale(value, artDpi);
+			Size = new Size(scale(160), scale(32));
+			_backImage = LoadImage("tickerbg" + suffix);
+			var font = DpiHelper.GetFontForDpi(_indicatorFont, artDpi);
+			_syncIndicator.Font = font;
+			_unreadMsgIndicator.Font = font;
+			_syncIndicator.Bounds = new Rectangle(scale(3), scale(3), scale(27), scale(8));
+			_unreadMsgIndicator.OnImage = LoadImage("urmsgson" + suffix);
+			_unreadMsgIndicator.OffImage = LoadImage("urmsgsoff" + suffix);
+			_unreadMsgIndicator.Bounds = new Rectangle(scale(33), scale(3), scale(60), scale(8));
+			Invalidate();
+		}
+
+		private Image LoadImage(string name)
+		{
+			return new Bitmap(
+				Assembly
+					.GetAssembly(GetType())
+					.GetRequiredResourceStream("Rsdn.Janus.Core.Ticker." + name + ".png"));
+		}
+
+		protected override void OnDpiChanged(DpiChangedEventArgs e)
+		{
+			base.OnDpiChanged(e);
+			ApplyDpi(e.DeviceDpiNew);
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+			// Окно создается еще в конструкторе (TopMost), до настройки индикаторов
+			if (_imagesDpi != 0)
+				ApplyDpi(DeviceDpi);
+		}
+		#endregion
+
 		private void DrawBackground(Graphics g)
 		{
-			g.DrawImage(_backImage, 0, 0, _backImage.Width, _backImage.Height);
+			// Индикаторы перерисовываются уже при настройке, до загрузки картинок под DPI окна
+			if (_backImage != null)
+				g.DrawImage(_backImage, 0, 0, _backImage.Width, _backImage.Height);
 		}
 
 		private static void DrawIndicator(Graphics g, ITickerIndicator ind)

@@ -182,7 +182,39 @@ namespace Rsdn.Shortcuts
 		public ListBoxTwoColumn()
 		{
 			base.DrawMode = DrawMode.OwnerDrawFixed;
-			base.ItemHeight += _offsetLines;
+			UpdateItemHeight();
+		}
+
+		/// <summary>
+		/// Высота строки зависит от шрифта, а он меняется при масштабировании под DPI.
+		/// </summary>
+		private void UpdateItemHeight()
+		{
+			base.ItemHeight = Font.Height + LogicalToDeviceUnits(_offsetLines);
+		}
+
+		/// <summary>
+		/// Высота строки вычисляется по шрифту и не задается извне
+		/// (значение из ресурсов формы не учитывает DPI монитора).
+		/// </summary>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public override int ItemHeight
+		{
+			get { return base.ItemHeight; }
+			set { }
+		}
+
+		protected override void OnFontChanged(EventArgs e)
+		{
+			base.OnFontChanged(e);
+			UpdateItemHeight();
+		}
+
+		protected override void OnDpiChangedAfterParent(EventArgs e)
+		{
+			base.OnDpiChangedAfterParent(e);
+			UpdateItemHeight();
 		}
 		#endregion
 

@@ -40,8 +40,10 @@ namespace Rsdn.Janus
 			_allForumsCheck.Enabled = _allForumsCheck.Checked =
 				!excludeHash.Contains(TagLineInfo.AllForums);
 
-			_forumsImages.Images.Add(provider.GetRequiredService<IStyleImageManager>()
-				.GetImage(@"NavTree\Forum", StyleImageType.ConstSize));
+			var forumsImages = new DpiImageList();
+			forumsImages.Add(provider.GetRequiredService<IStyleImageManager>(), @"NavTree\Forum", StyleImageType.ConstSize);
+			_forumsTree.ImageList = forumsImages.AttachTo(_forumsTree).ImageList;
+			Disposed += (sender, args) => forumsImages.Dispose();
 
 			FillForumsTree();
 

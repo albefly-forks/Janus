@@ -205,7 +205,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (m_imageButtonClose == null)
-					m_imageButtonClose = Resources.DockPane_Close;
+					m_imageButtonClose = DpiResources.Get("DockPane_Close");
 
 				return m_imageButtonClose;
 			}
@@ -232,7 +232,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (m_imageButtonWindowList == null)
-					m_imageButtonWindowList = Resources.DockPane_Option;
+					m_imageButtonWindowList = DpiResources.Get("DockPane_Option");
 
 				return m_imageButtonWindowList;
 			}
@@ -243,7 +243,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (m_imageButtonWindowListOverflow == null)
-					m_imageButtonWindowListOverflow = Resources.DockPane_OptionOverflow;
+					m_imageButtonWindowListOverflow = DpiResources.Get("DockPane_OptionOverflow");
 
 				return m_imageButtonWindowListOverflow;
 			}
@@ -277,7 +277,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		public Font TextFont
 		{
-			get { return DockPane.DockPanel.Skin.DockPaneStripSkin.TextFont; }
+			get { return Rsdn.Janus.DpiHelper.GetFontForDpi(DockPane.DockPanel.Skin.DockPaneStripSkin.TextFont, DeviceDpi); }
 		}
 
 		private Font BoldFont
@@ -342,69 +342,69 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		#region Customizable Properties
 
-		private static int ToolWindowStripGapTop
+		private int ToolWindowStripGapTop
 		{
-			get { return _ToolWindowStripGapTop; }
+			get { return LogicalToDeviceUnits(_ToolWindowStripGapTop); }
 		}
 
-		private static int ToolWindowStripGapBottom
+		private int ToolWindowStripGapBottom
 		{
-			get { return _ToolWindowStripGapBottom; }
+			get { return LogicalToDeviceUnits(_ToolWindowStripGapBottom); }
 		}
 
-		private static int ToolWindowStripGapLeft
+		private int ToolWindowStripGapLeft
 		{
-			get { return _ToolWindowStripGapLeft; }
+			get { return LogicalToDeviceUnits(_ToolWindowStripGapLeft); }
 		}
 
-		private static int ToolWindowStripGapRight
+		private int ToolWindowStripGapRight
 		{
-			get { return _ToolWindowStripGapRight; }
+			get { return LogicalToDeviceUnits(_ToolWindowStripGapRight); }
 		}
 
-		private static int ToolWindowImageHeight
+		private int ToolWindowImageHeight
 		{
-			get { return _ToolWindowImageHeight; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageHeight); }
 		}
 
-		private static int ToolWindowImageWidth
+		private int ToolWindowImageWidth
 		{
-			get { return _ToolWindowImageWidth; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageWidth); }
 		}
 
-		private static int ToolWindowImageGapTop
+		private int ToolWindowImageGapTop
 		{
-			get { return _ToolWindowImageGapTop; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageGapTop); }
 		}
 
-		private static int ToolWindowImageGapBottom
+		private int ToolWindowImageGapBottom
 		{
-			get { return _ToolWindowImageGapBottom; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageGapBottom); }
 		}
 
-		private static int ToolWindowImageGapLeft
+		private int ToolWindowImageGapLeft
 		{
-			get { return _ToolWindowImageGapLeft; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageGapLeft); }
 		}
 
-		private static int ToolWindowImageGapRight
+		private int ToolWindowImageGapRight
 		{
-			get { return _ToolWindowImageGapRight; }
+			get { return LogicalToDeviceUnits(_ToolWindowImageGapRight); }
 		}
 
-		private static int ToolWindowTextGapRight
+		private int ToolWindowTextGapRight
 		{
-			get { return _ToolWindowTextGapRight; }
+			get { return LogicalToDeviceUnits(_ToolWindowTextGapRight); }
 		}
 
-		private static int ToolWindowTabSeperatorGapTop
+		private int ToolWindowTabSeperatorGapTop
 		{
-			get { return _ToolWindowTabSeperatorGapTop; }
+			get { return LogicalToDeviceUnits(_ToolWindowTabSeperatorGapTop); }
 		}
 
-		private static int ToolWindowTabSeperatorGapBottom
+		private int ToolWindowTabSeperatorGapBottom
 		{
-			get { return _ToolWindowTabSeperatorGapBottom; }
+			get { return LogicalToDeviceUnits(_ToolWindowTabSeperatorGapBottom); }
 		}
 
 		private static string ToolTipClose
@@ -442,14 +442,14 @@ namespace WeifenLuo.WinFormsUI.Docking
 			}
 		}
 
-		private static int DocumentStripGapTop
+		private int DocumentStripGapTop
 		{
-			get { return _DocumentStripGapTop; }
+			get { return LogicalToDeviceUnits(_DocumentStripGapTop); }
 		}
 
-		private static int DocumentStripGapBottom
+		private int DocumentStripGapBottom
 		{
-			get { return _DocumentStripGapBottom; }
+			get { return LogicalToDeviceUnits(_DocumentStripGapBottom); }
 		}
 
 		private TextFormatFlags DocumentTextFormat
@@ -467,74 +467,74 @@ namespace WeifenLuo.WinFormsUI.Docking
 			}
 		}
 
-		private static int DocumentTabMaxWidth
+		private int DocumentTabMaxWidth
 		{
-			get { return _DocumentTabMaxWidth; }
+			get { return LogicalToDeviceUnits(_DocumentTabMaxWidth); }
 		}
 
-		private static int DocumentButtonGapTop
+		private int DocumentButtonGapTop
 		{
-			get { return _DocumentButtonGapTop; }
+			get { return LogicalToDeviceUnits(_DocumentButtonGapTop); }
 		}
 
-		private static int DocumentButtonGapBottom
+		private int DocumentButtonGapBottom
 		{
-			get { return _DocumentButtonGapBottom; }
+			get { return LogicalToDeviceUnits(_DocumentButtonGapBottom); }
 		}
 
-		private static int DocumentButtonGapBetween
+		private int DocumentButtonGapBetween
 		{
-			get { return _DocumentButtonGapBetween; }
+			get { return LogicalToDeviceUnits(_DocumentButtonGapBetween); }
 		}
 
-		private static int DocumentButtonGapRight
+		private int DocumentButtonGapRight
 		{
-			get { return _DocumentButtonGapRight; }
+			get { return LogicalToDeviceUnits(_DocumentButtonGapRight); }
 		}
 
-		private static int DocumentTabGapTop
+		private int DocumentTabGapTop
 		{
-			get { return _DocumentTabGapTop; }
+			get { return LogicalToDeviceUnits(_DocumentTabGapTop); }
 		}
 
-		private static int DocumentTabGapLeft
+		private int DocumentTabGapLeft
 		{
-			get { return _DocumentTabGapLeft; }
+			get { return LogicalToDeviceUnits(_DocumentTabGapLeft); }
 		}
 
-		private static int DocumentTabGapRight
+		private int DocumentTabGapRight
 		{
-			get { return _DocumentTabGapRight; }
+			get { return LogicalToDeviceUnits(_DocumentTabGapRight); }
 		}
 
-		private static int DocumentIconGapBottom
+		private int DocumentIconGapBottom
 		{
-			get { return _DocumentIconGapBottom; }
+			get { return LogicalToDeviceUnits(_DocumentIconGapBottom); }
 		}
 
-		private static int DocumentIconGapLeft
+		private int DocumentIconGapLeft
 		{
-			get { return _DocumentIconGapLeft; }
+			get { return LogicalToDeviceUnits(_DocumentIconGapLeft); }
 		}
 
-		private static int DocumentIconGapRight
+		private int DocumentIconGapRight
 		{
-			get { return _DocumentIconGapRight; }
+			get { return LogicalToDeviceUnits(_DocumentIconGapRight); }
 		}
 
-		private static int DocumentIconWidth
+		private int DocumentIconWidth
 		{
-			get { return _DocumentIconWidth; }
+			get { return LogicalToDeviceUnits(_DocumentIconWidth); }
 		}
 
-		private static int DocumentIconHeight
+		private int DocumentIconHeight
 		{
-			get { return _DocumentIconHeight; }
+			get { return LogicalToDeviceUnits(_DocumentIconHeight); }
 		}
 
-		private static int DocumentTextGapRight
+		private int DocumentTextGapRight
 		{
-			get { return _DocumentTextGapRight; }
+			get { return LogicalToDeviceUnits(_DocumentTextGapRight); }
 		}
 
 		private static Pen PenToolWindowTabBorder
@@ -1413,8 +1413,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 			Rectangle rectTabStrip = TabStripRectangle;
 
 			// Set position and size of the buttons
-			int buttonWidth = ButtonClose.Image.Width;
-			int buttonHeight = ButtonClose.Image.Height;
+			int buttonWidth = ButtonClose.ScaledImage.Width;
+			int buttonHeight = ButtonClose.ScaledImage.Height;
 			int height = rectTabStrip.Height - DocumentButtonGapTop - DocumentButtonGapBottom;
 			if (buttonHeight < height)
 			{

@@ -31,6 +31,7 @@ namespace Rsdn.Janus
 			_tagLines = new ObservableList<TagLineInfo>(tagLines);
 
 			InitializeComponent();
+			DpiHelper.EnableColumnScalingForChildren(this);
 
 			_serviceManager.Publish<ITagLineListFormService>(new TagLineListFormService(this));
 			_serviceManager.Publish<IDefaultCommandService>(new DefaultCommandService("Janus.Forum.TagLine.Edit"));
@@ -38,9 +39,10 @@ namespace Rsdn.Janus
 			_toolbarGenerator = new StripMenuGenerator(_serviceManager, _toolStrip, "Forum.TagLine.Toolbar");
 			_contextMenuGenerator = new StripMenuGenerator(_serviceManager, _contextMenuStrip, "Forum.TagLine.ContextMenu");
 
-			_listImages.Images.Add(
-				_serviceManager.GetRequiredService<IStyleImageManager>()
-					.GetImage(@"MessageTree\Msg", StyleImageType.ConstSize));
+			var listImages = new DpiImageList();
+			listImages.Add(_serviceManager.GetRequiredService<IStyleImageManager>(), @"MessageTree\Msg", StyleImageType.ConstSize);
+			_tagsList.SmallImageList = listImages.AttachTo(_tagsList).ImageList;
+			Disposed += (sender, args) => listImages.Dispose();
 
 			UpdateData();
 
