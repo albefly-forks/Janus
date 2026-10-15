@@ -39,6 +39,21 @@ namespace Rsdn.Janus
 						.OutboxMessages(m => !m.Hold)
 						.Select(
 							m =>
+								new
+								{
+									m.ForumID,
+									m.ID,
+									m.Body,
+									m.Tagline,
+									m.ReplyToID,
+									m.Subject,
+									m.Tags
+								})
+						.AsEnumerable()
+						// Текст склеивается на клиенте: в MS SQL тело сообщения - ntext,
+						// а для ntext оператор сложения строк в SQL не поддерживается
+						.Select(
+							m =>
 								new PostMessageInfo
 								{
 									forumId = m.ForumID,
