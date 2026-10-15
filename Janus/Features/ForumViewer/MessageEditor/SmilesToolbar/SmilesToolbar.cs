@@ -146,7 +146,9 @@ namespace Rsdn.Janus
 		/// <summary>
 		/// Размер отступа между кнопками.
 		/// </summary>
-		private const int _separatorSize = 5;
+		private const int _logicalSeparatorSize = 5;
+
+		private int _separatorSize => LogicalToDeviceUnits(_logicalSeparatorSize);
 
 		/// <summary>
 		/// Распологает кнопки в контроле в порядке в котором 

@@ -25,20 +25,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 				#region PanelIndicator
 				private class PanelIndicator : PictureBox, IHitTest
 				{
-					private static Image _imagePanelLeft = Resources.DockIndicator_PanelLeft;
-					private static Image _imagePanelRight = Resources.DockIndicator_PanelRight;
-					private static Image _imagePanelTop = Resources.DockIndicator_PanelTop;
-					private static Image _imagePanelBottom = Resources.DockIndicator_PanelBottom;
-					private static Image _imagePanelFill = Resources.DockIndicator_PanelFill;
-					private static Image _imagePanelLeftActive = Resources.DockIndicator_PanelLeft_Active;
-					private static Image _imagePanelRightActive = Resources.DockIndicator_PanelRight_Active;
-					private static Image _imagePanelTopActive = Resources.DockIndicator_PanelTop_Active;
-					private static Image _imagePanelBottomActive = Resources.DockIndicator_PanelBottom_Active;
-					private static Image _imagePanelFillActive = Resources.DockIndicator_PanelFill_Active;
 
-					public PanelIndicator(DockStyle dockStyle)
+					private readonly int m_dpi;
+
+					public PanelIndicator(DockStyle dockStyle, int dpi)
 					{
 						m_dockStyle = dockStyle;
+						m_dpi = dpi;
 						SizeMode = PictureBoxSizeMode.AutoSize;
 						Image = ImageInactive;
 					}
@@ -66,20 +59,25 @@ namespace WeifenLuo.WinFormsUI.Docking
 						}
 					}
 
+					private Image GetImage(string name)
+					{
+						return DpiResources.Get(name, m_dpi);
+					}
+
 					private Image ImageInactive
 					{
 						get
 						{
 							if (DockStyle == DockStyle.Left)
-								return _imagePanelLeft;
+								return GetImage("DockIndicator_PanelLeft");
 							else if (DockStyle == DockStyle.Right)
-								return _imagePanelRight;
+								return GetImage("DockIndicator_PanelRight");
 							else if (DockStyle == DockStyle.Top)
-								return _imagePanelTop;
+								return GetImage("DockIndicator_PanelTop");
 							else if (DockStyle == DockStyle.Bottom)
-								return _imagePanelBottom;
+								return GetImage("DockIndicator_PanelBottom");
 							else if (DockStyle == DockStyle.Fill)
-								return _imagePanelFill;
+								return GetImage("DockIndicator_PanelFill");
 							else
 								return null;
 						}
@@ -90,15 +88,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 						get
 						{
 							if (DockStyle == DockStyle.Left)
-								return _imagePanelLeftActive;
+								return GetImage("DockIndicator_PanelLeft_Active");
 							else if (DockStyle == DockStyle.Right)
-								return _imagePanelRightActive;
+								return GetImage("DockIndicator_PanelRight_Active");
 							else if (DockStyle == DockStyle.Top)
-								return _imagePanelTopActive;
+								return GetImage("DockIndicator_PanelTop_Active");
 							else if (DockStyle == DockStyle.Bottom)
-								return _imagePanelBottomActive;
+								return GetImage("DockIndicator_PanelBottom_Active");
 							else if (DockStyle == DockStyle.Fill)
-								return _imagePanelFillActive;
+								return GetImage("DockIndicator_PanelFill_Active");
 							else
 								return null;
 						}
@@ -153,14 +151,46 @@ namespace WeifenLuo.WinFormsUI.Docking
 						}
 					}
 
-					private static Bitmap _bitmapPaneDiamond = Resources.DockIndicator_PaneDiamond;
-					private static Bitmap _bitmapPaneDiamondLeft = Resources.DockIndicator_PaneDiamond_Left;
-					private static Bitmap _bitmapPaneDiamondRight = Resources.DockIndicator_PaneDiamond_Right;
-					private static Bitmap _bitmapPaneDiamondTop = Resources.DockIndicator_PaneDiamond_Top;
-					private static Bitmap _bitmapPaneDiamondBottom = Resources.DockIndicator_PaneDiamond_Bottom;
-					private static Bitmap _bitmapPaneDiamondFill = Resources.DockIndicator_PaneDiamond_Fill;
-					private static Bitmap _bitmapPaneDiamondHotSpot = Resources.DockIndicator_PaneDiamond_HotSpot;
-					private static Bitmap _bitmapPaneDiamondHotSpotIndex = Resources.DockIndicator_PaneDiamond_HotSpotIndex;
+					private Bitmap _bitmapPaneDiamond
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondLeft
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_Left", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondRight
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_Right", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondTop
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_Top", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondBottom
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_Bottom", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondFill
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_Fill", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondHotSpot
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_HotSpot", m_dpi); }
+					}
+
+					private Bitmap _bitmapPaneDiamondHotSpotIndex
+					{
+						get { return DpiResources.Get("DockIndicator_PaneDiamond_HotSpotIndex"); }
+					}
+
 					private static HotSpotIndex[] _hotSpots = new HotSpotIndex[]
 																				{
 																					new HotSpotIndex(1, 0, DockStyle.Top),
@@ -169,18 +199,35 @@ namespace WeifenLuo.WinFormsUI.Docking
 																					new HotSpotIndex(2, 1, DockStyle.Right),
 																					new HotSpotIndex(1, 2, DockStyle.Bottom)
 																				};
-					private static GraphicsPath _displayingGraphicsPath = DrawHelper.CalculateGraphicsPathFromBitmap(_bitmapPaneDiamond);
+					// Контур ромба для каждого набора картинок (вычисляется попиксельно)
+					private static readonly Dictionary<Bitmap, GraphicsPath> _displayingGraphicsPaths =
+						new Dictionary<Bitmap, GraphicsPath>();
 
-					public PaneIndicator()
+					private readonly int m_dpi;
+
+					public PaneIndicator(int dpi)
 					{
+						m_dpi = dpi;
 						SizeMode = PictureBoxSizeMode.AutoSize;
 						Image = _bitmapPaneDiamond;
 						Region = new Region(DisplayingGraphicsPath);
 					}
 
-					public static GraphicsPath DisplayingGraphicsPath
+					public GraphicsPath DisplayingGraphicsPath
 					{
-						get { return _displayingGraphicsPath; }
+						get
+						{
+							lock (_displayingGraphicsPaths)
+							{
+								GraphicsPath path;
+								if (!_displayingGraphicsPaths.TryGetValue(_bitmapPaneDiamond, out path))
+								{
+									path = DrawHelper.CalculateGraphicsPathFromBitmap(_bitmapPaneDiamond);
+									_displayingGraphicsPaths.Add(_bitmapPaneDiamond, path);
+								}
+								return path;
+							}
+						}
 					}
 
 					public DockStyle HitTest(Point pt)
@@ -226,14 +273,21 @@ namespace WeifenLuo.WinFormsUI.Docking
 				#endregion PaneIndicator
 
 				#region consts
-				private int _PanelIndicatorMargin = 10;
+				private const int _LogicalPanelIndicatorMargin = 10;
 				#endregion
 
 				private DockDragHandler m_dragHandler;
+				private readonly int m_dpi;
+
+				private int _PanelIndicatorMargin
+				{
+					get { return Rsdn.Janus.DpiHelper.Scale(_LogicalPanelIndicatorMargin, m_dpi); }
+				}
 
 				public DockIndicator(DockDragHandler dragHandler)
 				{
 					m_dragHandler = dragHandler;
+					m_dpi = dragHandler.DockPanel.DeviceDpi;
 					Controls.AddRange(new Control[] {
 						PaneDiamond,
 						PanelLeft,
@@ -251,7 +305,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_paneDiamond == null)
-							m_paneDiamond = new PaneIndicator();
+							m_paneDiamond = new PaneIndicator(m_dpi);
 
 						return m_paneDiamond;
 					}
@@ -263,7 +317,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_panelLeft == null)
-							m_panelLeft = new PanelIndicator(DockStyle.Left);
+							m_panelLeft = new PanelIndicator(DockStyle.Left, m_dpi);
 
 						return m_panelLeft;
 					}
@@ -275,7 +329,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_panelRight == null)
-							m_panelRight = new PanelIndicator(DockStyle.Right);
+							m_panelRight = new PanelIndicator(DockStyle.Right, m_dpi);
 
 						return m_panelRight;
 					}
@@ -287,7 +341,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_panelTop == null)
-							m_panelTop = new PanelIndicator(DockStyle.Top);
+							m_panelTop = new PanelIndicator(DockStyle.Top, m_dpi);
 
 						return m_panelTop;
 					}
@@ -299,7 +353,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_panelBottom == null)
-							m_panelBottom = new PanelIndicator(DockStyle.Bottom);
+							m_panelBottom = new PanelIndicator(DockStyle.Bottom, m_dpi);
 
 						return m_panelBottom;
 					}
@@ -311,7 +365,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					get
 					{
 						if (m_panelFill == null)
-							m_panelFill = new PanelIndicator(DockStyle.Fill);
+							m_panelFill = new PanelIndicator(DockStyle.Fill, m_dpi);
 
 						return m_panelFill;
 					}
@@ -435,7 +489,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 						Rectangle rect = RectangleToClient(DockPane.RectangleToScreen(DockPane.ClientRectangle));
 						PaneDiamond.Location = new Point(rect.Left + (rect.Width - PaneDiamond.Width) / 2, rect.Top + (rect.Height - PaneDiamond.Height) / 2);
 						PaneDiamond.Visible = true;
-						using (GraphicsPath graphicsPath = PaneIndicator.DisplayingGraphicsPath.Clone() as GraphicsPath)
+						using (GraphicsPath graphicsPath = PaneDiamond.DisplayingGraphicsPath.Clone() as GraphicsPath)
 						{
 							Point[] pts = new Point[]
 						{

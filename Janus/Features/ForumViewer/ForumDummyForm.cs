@@ -170,6 +170,7 @@ namespace Rsdn.Janus
 			this.AssignServices(provider);
 
 			InitializeComponent();
+			DesignerImages.Apply(this);
 
 			SetPositionViewMsgArea(Config.Instance.MsgPosition);
 			CustomInitializeComponent();
@@ -183,16 +184,16 @@ namespace Rsdn.Janus
 
 			State = Config.Instance.ForumFormState;
 
-			var imageList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
+			var imageList = new DpiImageList();
 
 			// Делаем поддержку локализации для TreeGrid'а
 			// В случае изменения TreeGrid'а в Designer'е, необходимо внести изменения сюда
 			_tgMsgs.Columns[1].ImageIndex =
-				imageList.AddImage(_imageManager.GetMarkImage(MessageFlagExistence.OnMessage));
+				imageList.AddScoped(() => _imageManager.GetMarkImage(MessageFlagExistence.OnMessage));
 
 			_tgMsgs.Columns[2].Text = SR.TGColumnSubject;
 			_tgMsgs.Columns[2].ImageIndex =
-				imageList.AddImage(
+				imageList.AddScoped(() =>
 					_imageManager.GetMessageImage(
 					MessageType.Ordinal,
 					MessageFlagExistence.None,
@@ -202,7 +203,7 @@ namespace Rsdn.Janus
 
 			_tgMsgs.Columns[3].Text = SR.TGColumnAuthor;
 			_tgMsgs.Columns[3].ImageIndex =
-				imageList.AddImage(_imageManager.GetUserImage(UserClass.User));
+				imageList.AddScoped(() => _imageManager.GetUserImage(UserClass.User));
 
 			_tgMsgs.Columns[4].Text = SR.TGColumnRate;
 
@@ -212,12 +213,12 @@ namespace Rsdn.Janus
 
 			_tgMsgs.Columns[7].Text = SR.TGColumnDate;
 			_tgMsgs.Columns[7].ImageIndex =
-				imageList.AddImage(_imageManager.GetMessageDateImage(DateTime.Now));
+				imageList.AddScoped(() => _imageManager.GetMessageDateImage(DateTime.Now));
 
 			_tgMsgs.Font = Config.Instance.StyleConfig.MessageTreeFont;
 			_tgMsgs.BackColor = Config.Instance.StyleConfig.MessageTreeBack;
 			_tgMsgs.GridLines = Config.Instance.ForumDisplayConfig.MsgListGridLines;
-			_tgMsgs.SmallImageList = imageList;
+			_tgMsgs.SmallImageList = imageList.AttachTo(_tgMsgs).ImageList;
 
 			if (Config.Instance.ForumColumnOrder.Length == _tgMsgs.Columns.Count)
 				_tgMsgs.ColumnsOrder = Config.Instance.ForumColumnOrder;

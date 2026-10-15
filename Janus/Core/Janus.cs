@@ -59,6 +59,7 @@ namespace Rsdn.Janus
 
 					Application.EnableVisualStyles();
 					Application.SetCompatibleTextRenderingDefault(false);
+					DpiHelper.EnableWebBrowserDpiScaling();
 
 					// Создаем контрол, чтобы инициализировать винформсный констекст синхронизации,
 					// если он еще не инициализирован

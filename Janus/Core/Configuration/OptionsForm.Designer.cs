@@ -58,9 +58,9 @@ namespace Rsdn.Janus
 			// _lytButtons
 			// 
 			resources.ApplyResources(_lytButtons, "_lytButtons");
-			_lytButtons.Controls.Add(this._saveButton);
-			_lytButtons.Controls.Add(this._okButton);
 			_lytButtons.Controls.Add(this._cancelButton);
+			_lytButtons.Controls.Add(this._okButton);
+			_lytButtons.Controls.Add(this._saveButton);
 			_lytButtons.Name = "_lytButtons";
 			// 
 			// _saveButton
@@ -125,8 +125,8 @@ namespace Rsdn.Janus
 			// 
 			// _styleTab
 			// 
-			this._styleTab.Controls.Add(this.flowLayoutPanel1);
 			this._styleTab.Controls.Add(this._stylePropertyGrid);
+			this._styleTab.Controls.Add(this.flowLayoutPanel1);
 			resources.ApplyResources(this._styleTab, "_styleTab");
 			this._styleTab.Name = "_styleTab";
 			// 
@@ -162,11 +162,13 @@ namespace Rsdn.Janus
 			// 
 			// OptionsForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._okButton;
 			this.CancelButton = this._cancelButton;
 			resources.ApplyResources(this, "$this");
-			this.Controls.Add(_lytButtons);
 			this.Controls.Add(this._tabControl);
+			this.Controls.Add(_lytButtons);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "OptionsForm";

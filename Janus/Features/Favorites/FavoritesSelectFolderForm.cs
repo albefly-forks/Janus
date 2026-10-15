@@ -11,6 +11,7 @@ namespace Rsdn.Janus
 	public partial class FavoritesSelectFolderForm : Form
 	{
 		private readonly IFavoritesManager _favManager;
+		private readonly DpiImageList _treeImages;
 
 		#region Constructor(s) & Dispose
 		public FavoritesSelectFolderForm(
@@ -26,7 +27,8 @@ namespace Rsdn.Janus
 				_commentLabel.Visible = false;
 			}
 
-			_folderView.SmallImageList = FavoritesDummyForm.Instance.TreeImages;
+			_treeImages = FavoritesDummyForm.Instance.CreateTreeImages();
+			_folderView.SmallImageList = _treeImages.AttachTo(_folderView).ImageList;
 
 			if (folders.ShowLinks)
 				folders.ShowLinks = false;
@@ -42,6 +44,9 @@ namespace Rsdn.Janus
 
 			if (!rootFolder.ShowLinks)
 				rootFolder.ShowLinks = true;
+
+			if (disposing)
+				_treeImages.Dispose();
 
 			base.Dispose(disposing);
 		}

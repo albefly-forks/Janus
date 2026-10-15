@@ -28,7 +28,7 @@ namespace Rsdn.Janus
 		private readonly IFavoritesManager _favManager;
 
 		#region Images
-		private readonly ImageList _treeImages = new ImageList();
+		private readonly DpiImageList _treeImages = new DpiImageList();
 
 		private void FillImages()
 		{
@@ -37,16 +37,28 @@ namespace Rsdn.Janus
 
 			//иконки для папок избранного
 			FolderStartIndex =
-				sim.AppendImage(prefix + "Favorites", StyleImageType.ConstSize, _treeImages);
+				_treeImages.Add(sim, prefix + "Favorites", StyleImageType.ConstSize);
 			EmptyFolderStartIndex =
-				sim.AppendImage(prefix + "FavoritesEmpty", StyleImageType.ConstSize, _treeImages);
+				_treeImages.Add(sim, prefix + "FavoritesEmpty", StyleImageType.ConstSize);
 
 			// линк в избранном
 			MsgLinkIndex =
-				sim.AppendImage(prefix + "Link", StyleImageType.ConstSize, _treeImages);
+				_treeImages.Add(sim, prefix + "Link", StyleImageType.ConstSize);
 		}
 
-		internal ImageList TreeImages => _treeImages;
+		/// <summary>
+		/// Создать список картинок дерева избранного для DPI указанного грида.
+		/// </summary>
+		internal DpiImageList CreateTreeImages()
+		{
+			var images = new DpiImageList();
+			var sim = _serviceManager.GetRequiredService<IStyleImageManager>();
+			const string prefix = @"MessageTree\";
+			images.Add(sim, prefix + "Favorites", StyleImageType.ConstSize);
+			images.Add(sim, prefix + "FavoritesEmpty", StyleImageType.ConstSize);
+			images.Add(sim, prefix + "Link", StyleImageType.ConstSize);
+			return images;
+		}
 
 		internal int EmptyFolderStartIndex { get; private set; }
 		internal int FolderStartIndex { get; private set; }
@@ -83,7 +95,7 @@ namespace Rsdn.Janus
 			_grid.Columns[0].Text = SR.TGColumnNameLink;
 			_grid.Columns[1].Text = SR.TGColumnComment;
 
-			_grid.SmallImageList = _treeImages;
+			_grid.SmallImageList = _treeImages.AttachTo(_grid).ImageList;
 
 			if (Config.Instance.FavoritesColumnOrder.Length == _grid.Columns.Count)
 				_grid.ColumnsOrder = Config.Instance.FavoritesColumnOrder;

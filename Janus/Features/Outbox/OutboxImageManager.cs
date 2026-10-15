@@ -10,7 +10,7 @@ namespace Rsdn.Janus
 	/// </summary>
 	public class OutboxImageManager
 	{
-		private static ImageList _imageList;
+		private static DpiImageList _imageList;
 
 		private static int _msgImageIndex;
 		private static int _msgWaitImageIndex;
@@ -29,7 +29,7 @@ namespace Rsdn.Janus
 		private static int _regetTopicImageIndex;
 		private static int _regetTopicFolderImageIndex;
 
-		public static ImageList ImageList
+		public static DpiImageList ImageList
 		{
 			get 
 			{
@@ -75,42 +75,42 @@ namespace Rsdn.Janus
 		{
 			const string prefix = @"Outbox\";
 
-			_imageList = new ImageList {ColorDepth = ColorDepth.Depth32Bit};
+			_imageList = new DpiImageList();
 
 			var styleImageManager =
 				ApplicationManager.Instance.ServiceProvider.GetRequiredService<IStyleImageManager>();
 			_msgImageIndex =
-				styleImageManager.AppendImage(prefix + "Msg", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Msg", StyleImageType.ConstSize);
 			_msgWaitImageIndex =
-				styleImageManager.AppendImage(prefix + "MsgWait", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "MsgWait", StyleImageType.ConstSize);
 			_msgReplyImageIndex =
-				styleImageManager.AppendImage(prefix + "MsgReply", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "MsgReply", StyleImageType.ConstSize);
 			_msgWaitReplyImageIndex =
-				styleImageManager.AppendImage(prefix + "MsgWaitReply", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "MsgWaitReply", StyleImageType.ConstSize);
 			_msgFolderImageIndex =
-				styleImageManager.AppendImage(prefix + "MsgFolder", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "MsgFolder", StyleImageType.ConstSize);
 			_rate1ImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate1", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate1", StyleImageType.ConstSize);
 			_rate2ImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate2", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate2", StyleImageType.ConstSize);
 			_rate3ImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate3", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate3", StyleImageType.ConstSize);
 			_rateAgreeImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate-4", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate-4", StyleImageType.ConstSize);
 			_rateDisagreeImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate0", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate0", StyleImageType.ConstSize);
 			_rateSmileImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate-2", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate-2", StyleImageType.ConstSize);
 			_ratePlus1ImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate-3", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate-3", StyleImageType.ConstSize);
 			_rateDeleteImageIndex =
-				styleImageManager.AppendImage(prefix + "Rate-1", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "Rate-1", StyleImageType.ConstSize);
 			_rateFolderImageIndex =
-				styleImageManager.AppendImage(prefix + "RateFolder", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "RateFolder", StyleImageType.ConstSize);
 			_regetTopicImageIndex =
-				styleImageManager.AppendImage("RegetTopic", StyleImageType.Small, _imageList);
+				_imageList.Add(styleImageManager, "RegetTopic", StyleImageType.Small);
 			_regetTopicFolderImageIndex =
-				styleImageManager.AppendImage(prefix + "RegetTopicFolder", StyleImageType.ConstSize, _imageList);
+				_imageList.Add(styleImageManager, prefix + "RegetTopicFolder", StyleImageType.ConstSize);
 		}
 	}
 }

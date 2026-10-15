@@ -17,6 +17,12 @@ namespace Rsdn.Shortcuts
 
 			InitializeComponent();
 
+			// WinForms не масштабирует ширину колонок под DPI монитора
+			var logicalColumnWidth = columnHeader1.Width;
+			EventHandler scaleColumn = (s, e) => columnHeader1.Width = _lvPresetList.LogicalToDeviceUnits(logicalColumnWidth);
+			_lvPresetList.HandleCreated += scaleColumn;
+			_lvPresetList.DpiChangedAfterParent += scaleColumn;
+
 			SetButtonsState();
 		}
 

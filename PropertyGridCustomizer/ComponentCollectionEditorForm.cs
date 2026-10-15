@@ -17,6 +17,12 @@ namespace Rsdn.Janus
 		{
 			InitializeComponent();
 
+			// WinForms не масштабирует ширину колонок под DPI монитора
+			var logicalColumnWidth = _columnHeader1.Width;
+			EventHandler scaleColumn = (s, e) => _columnHeader1.Width = _ItemsList.LogicalToDeviceUnits(logicalColumnWidth);
+			_ItemsList.HandleCreated += scaleColumn;
+			_ItemsList.DpiChangedAfterParent += scaleColumn;
+
 			_Collection = coll;
 			_ItemType = CollectionItemType();
 			var hpc = HasParamlessCtor(_ItemType);

@@ -23,46 +23,43 @@ namespace Rsdn.Janus
 		{
 			_lblInfo.Text = SR.Forum.RateForm.AddRate;
 
-			var styler = _provider.GetRequiredService<IStyleImageManager>();
+			string imageName = null;
 			switch (rate)
 			{
 				case MessageRates.Plus1:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\RatePlus1", StyleImageType.Small);
+					imageName = "MessageViewer\\RatePlus1";
 					break;
 				case MessageRates.Agree:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\RateAgree", StyleImageType.Small);
+					imageName = "MessageViewer\\RateAgree";
 					break;
 				case MessageRates.DisAgree:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\RateDisagree", StyleImageType.Small);
+					imageName = "MessageViewer\\RateDisagree";
 					break;
 				case MessageRates.Rate1:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\Rate1", StyleImageType.Small);
+					imageName = "MessageViewer\\Rate1";
 					break;
 				case MessageRates.Rate2:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\Rate2", StyleImageType.Small);
+					imageName = "MessageViewer\\Rate2";
 					break;
 				case MessageRates.Rate3:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\Rate3", StyleImageType.Small);
+					imageName = "MessageViewer\\Rate3";
 					break;
 				case MessageRates.Smile:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\RateSmile", StyleImageType.Small);
+					imageName = "MessageViewer\\RateSmile";
 					break;
 				case MessageRates.DeleteRate:
-					_pbxRateImage.Image = styler.GetImage(
-						"MessageViewer\\RateX", StyleImageType.Small);
+					imageName = "MessageViewer\\RateX";
 					_lblInfo.Text = SR.Forum.RateForm.DeleteRate;
 					break;
 				case MessageRates.DeleteLocally:
 					_lblInfo.Text = SR.Forum.RateForm.DeleteRateLocally;
 					break;
 			}
+
+			if (imageName != null)
+				_provider
+					.GetRequiredService<IStyleImageManager>()
+					.BindImage(_pbxRateImage, imageName, StyleImageType.Small, img => _pbxRateImage.Image = img);
 		}
 	}
 }

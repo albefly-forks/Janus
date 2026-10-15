@@ -198,6 +198,8 @@
 			// 
 			// ForumDummyForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.Controls.Add(this._bottomPanel);
 			this.Controls.Add(this._splitter);
 			this.Controls.Add(this._topPanel);

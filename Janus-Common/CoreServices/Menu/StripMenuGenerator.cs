@@ -34,7 +34,11 @@ namespace Rsdn.Janus
 			new Dictionary<string, List<ToolStripItem>>(StringComparer.OrdinalIgnoreCase);
 		private readonly Dictionary<string, List<ToolStripItem>> _checkControls =
 			new Dictionary<string, List<ToolStripItem>>(StringComparer.OrdinalIgnoreCase);
+		// Пункты с картинками и тип меню, для которого картинка выбиралась, - для смены DPI
+		private readonly Dictionary<ToolStripItem, TargetMenuType> _imageItems =
+			new Dictionary<ToolStripItem, TargetMenuType>();
 		private readonly AsyncOperation _uiAsyncOperation;
+		private int _imagesDpi;
 		private bool _isDisposed;
 		private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -84,6 +88,20 @@ namespace Rsdn.Janus
 
 			_uiAsyncOperation = _serviceProvider.GetRequiredService<IUIShell>().CreateUIAsyncOperation();
 
+			// Выпадающее меню - отдельное окно, оно показывается на мониторе под курсором
+			var dropDown = toolStrip as ToolStripDropDown;
+			if (dropDown != null)
+			{
+				_imagesDpi = DpiHelper.GetDpiAtCursor();
+				dropDown.Opening += DropDownOpening;
+				_disposables.Add(Disposable.Create(() => dropDown.Opening -= DropDownOpening));
+			}
+			else
+			{
+				_imagesDpi = toolStrip.DeviceDpi;
+				_disposables.Add(DpiHelper.SubscribeDpiChanged(toolStrip, UpdateImagesDpi));
+			}
+
 			Init();
 
 			_disposables.Add(
@@ -124,9 +142,33 @@ namespace Rsdn.Janus
 
 		#region Private Members
 
+		private void DropDownOpening(object sender, CancelEventArgs e)
+		{
+			UpdateImagesDpi(DpiHelper.GetDpiAtCursor());
+		}
+
+		private void UpdateImagesDpi(int dpi)
+		{
+			if (_imagesDpi == dpi)
+				return;
+			_imagesDpi = dpi;
+
+			_toolStrip.SuspendLayout();
+			try
+			{
+				foreach (var pair in _imageItems)
+					pair.Key.Image = GetImage(((IMenuItemWithTextAndImage)pair.Key.Tag).Image, pair.Value);
+			}
+			finally
+			{
+				_toolStrip.ResumeLayout();
+			}
+		}
+
 		private void Init()
 		{
 			_commandControls.Clear();
+			_imageItems.Clear();
 			_toolStrip.Items.Clear();
 
 			_toolStrip.Items.AddRange(CreateStripItems(_menuService.GetMenu(_menuName).Groups, _menuType));
@@ -427,6 +469,8 @@ namespace Rsdn.Janus
 			toolStripItem.Text = menuItem.Text;
 			toolStripItem.ImageScaling = ToolStripItemImageScaling.None;
 			toolStripItem.Image = GetImage(menuItem.Image, menuType);
+			if (menuItem.Image != null)
+				_imageItems[toolStripItem] = menuType;
 			toolStripItem.DisplayStyle = GetDisplayStyle(
 				menuItem.DisplayStyle, menuItem.Image != null, menuType);
 			toolStripItem.Tag = menuItem;
@@ -480,7 +524,8 @@ namespace Rsdn.Janus
 							|| menuType == TargetMenuType.ContextMenu
 							|| _useSmallImages
 						? StyleImageType.Small
-						: StyleImageType.Default))
+						: StyleImageType.Default),
+					_imagesDpi)
 				: null;
 		}
 

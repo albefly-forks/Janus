@@ -175,20 +175,20 @@ namespace Rsdn.Janus
 		{
 			var columns = _tgMsgs.Columns;
 
-			var imageList = new ImageList { ColorDepth = ColorDepth.Depth32Bit };
-			_tgMsgs.SmallImageList = imageList;
+			var imageList = new DpiImageList();
+			_tgMsgs.SmallImageList = imageList.AttachTo(_tgMsgs).ImageList;
 
 			// Картинки в заголовке грида
-			columns[1].ImageIndex = imageList.AddImage(_imgManager.GetMarkImage(MessageFlagExistence.OnMessage));
-			columns[2].ImageIndex = imageList.AddImage(
+			columns[1].ImageIndex = imageList.AddScoped(() => _imgManager.GetMarkImage(MessageFlagExistence.OnMessage));
+			columns[2].ImageIndex = imageList.AddScoped(() =>
 				_imgManager.GetMessageImage(
 					MessageType.Ordinal,
 					MessageFlagExistence.None,
 					false,
 					MessageFlagExistence.None,
 					false));
-			columns[3].ImageIndex = imageList.AddImage(_imgManager.GetUserImage(UserClass.User));
-			columns[7].ImageIndex = imageList.AddImage(_imgManager.GetMessageDateImage(DateTime.Now));
+			columns[3].ImageIndex = imageList.AddScoped(() => _imgManager.GetUserImage(UserClass.User));
+			columns[7].ImageIndex = imageList.AddScoped(() => _imgManager.GetMessageDateImage(DateTime.Now));
 
 			// Делаем поддержку локализации для TreeGrid'а
 			// В случае изменения TreeGrid'а в Designer'е, необходимо 

@@ -85,6 +85,8 @@
 			// 
 			// RateForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._btnYes;
 			resources.ApplyResources(this, "$this");
 			this.BackColor = System.Drawing.SystemColors.ControlLight;

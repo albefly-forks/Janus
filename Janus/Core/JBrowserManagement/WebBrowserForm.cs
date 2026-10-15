@@ -51,9 +51,9 @@ namespace Rsdn.Janus
 			_webBrowser.DocumentCompleted += WebBrowserDocCompleted;
 
 			var styleImageManager = serviceManager.GetService<IStyleImageManager>();
-			var image = styleImageManager?.TryGetImage("jbrowser", StyleImageType.Large);
-			if (image != null) 
-				Icon = image.ToIcon();
+			var icon = styleImageManager?.GetIcon("jbrowser", StyleImageType.Small);
+			if (icon != null)
+				Icon = icon;
 
 #if DEBUG
 			_webBrowser.ScriptErrorsSuppressed = false;

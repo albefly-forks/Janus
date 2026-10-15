@@ -245,7 +245,10 @@ namespace Rsdn.Janus.Framework
 		private void OnMouseMove(object sender, MouseEventArgs e)
 		{
 			// check to see if the mouse cursor position is within the bounds of our control
-			if (e.X >= _rr.X && e.X <= _rr.X + _rr.Width && e.Y >= _rr.Y && e.Y <= _rr.Y + _rr.Height)
+			// _rr задан в логических единицах (см. OnPaint)
+			var x = e.X * DpiHelper.LogicalDpi / DeviceDpi;
+			var y = e.Y * DpiHelper.LogicalDpi / DeviceDpi;
+			if (x >= _rr.X && x <= _rr.X + _rr.Width && y >= _rr.Y && y <= _rr.Y + _rr.Height)
 			{
 				if (!_hot)
 				{
@@ -467,6 +470,12 @@ namespace Rsdn.Janus.Framework
 			var r = ClientRectangle; // fixed in version 1.1
 			g.FillRectangle(new SolidBrush(BackColor), r);
 
+			// Кнопка сплиттера нарисована попиксельно в логических единицах (96 DPI),
+			// под DPI монитора ее масштабирует преобразование координат
+			var scale = DeviceDpi / (float)DpiHelper.LogicalDpi;
+			r = new Rectangle(0, 0, (int)Math.Round(r.Width / scale), (int)Math.Round(r.Height / scale));
+			g.ScaleTransform(scale, scale);
+
 			#region Vertical Splitter
 			// Check the docking style and create the control rectangle accordingly
 			if (Dock == DockStyle.Left || Dock == DockStyle.Right)
@@ -474,7 +483,7 @@ namespace Rsdn.Janus.Framework
 				// create a new rectangle in the vertical center of the splitter for our collapse control button
 				_rr = new Rectangle(r.X, r.Y + ((r.Height - 115)/2), 8, 115);
 				// force the width to 8px so that everything always draws correctly
-				Width = 8;
+				Width = LogicalToDeviceUnits(8);
 
 				// draw the background color for our control image
 				g.FillRectangle(
@@ -573,6 +582,7 @@ namespace Rsdn.Janus.Framework
 				if (_borderStyle != Border3DStyle.Flat)
 				{
 					// Paint the control border
+					g.ResetTransform();
 					ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, _borderStyle, Border3DSide.Left);
 					ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, _borderStyle, Border3DSide.Right);
 				}
@@ -588,7 +598,7 @@ namespace Rsdn.Janus.Framework
 				// create a new rectangle in the horizontal center of the splitter for our collapse control button
 				_rr = new Rectangle(r.X + ((r.Width - 115)/2), r.Y, 115, 8);
 				// force the height to 8px
-				Height = 8;
+				Height = LogicalToDeviceUnits(8);
 
 				// draw the background color for our control image
 				g.FillRectangle(
@@ -683,6 +693,7 @@ namespace Rsdn.Janus.Framework
 				if (_borderStyle != Border3DStyle.Flat)
 				{
 					// Paint the control border
+					g.ResetTransform();
 					ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, _borderStyle, Border3DSide.Top);
 					ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, _borderStyle, Border3DSide.Bottom);
 				}

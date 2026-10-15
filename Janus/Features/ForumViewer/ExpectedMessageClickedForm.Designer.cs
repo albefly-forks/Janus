@@ -61,6 +61,8 @@
 			// 
 			// ExpectedMessageClickedForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._openInBrowserButton;
 			this.CancelButton = this._cancelButton;
 			resources.ApplyResources(this, "$this");

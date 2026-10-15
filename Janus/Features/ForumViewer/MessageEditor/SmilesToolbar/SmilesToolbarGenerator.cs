@@ -14,6 +14,7 @@ namespace Rsdn.Janus
 		private readonly string _menuName;
 		private readonly SmilesToolbar _toolbar;
 		private readonly IDisposable _menuChangedSubscription;
+		private readonly IDisposable _dpiChangedSubscription;
 
 		public SmilesToolbarGenerator(
 			IServiceProvider provider, string menuName, SmilesToolbar toolbar)
@@ -39,6 +40,7 @@ namespace Rsdn.Janus
 				.MenuChanged
 				.Where(changedMenuName => _menuName == changedMenuName)
 				.Subscribe(changedMenuName => UpdateMenu());
+			_dpiChangedSubscription = DpiHelper.SubscribeDpiChanged(_toolbar, dpi => UpdateMenu());
 			_toolbar.ButtonClick += ToolbarButtonClick;
 		}
 
@@ -48,6 +50,7 @@ namespace Rsdn.Janus
 		{
 			_toolbar.ButtonClick -= ToolbarButtonClick;
 			_menuChangedSubscription.Dispose();
+			_dpiChangedSubscription.Dispose();
 		}
 
 		#endregion
@@ -81,7 +84,7 @@ namespace Rsdn.Janus
 								menuCommand.Description,
 								menuCommand.Image != null
 									? _styleImageManager.TryGetImage(
-										menuCommand.Image, StyleImageType.ConstSize)
+										menuCommand.Image, StyleImageType.ConstSize, _toolbar.DeviceDpi)
 									: null,
 								menuCommand));
 					}
