@@ -62,6 +62,8 @@
 			// 
 			// EditRateForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this.button1;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(255)))), ((int)(((byte)(244)))));
 			this.CancelButton = this.button2;

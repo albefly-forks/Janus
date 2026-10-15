@@ -19,7 +19,7 @@ namespace Rsdn.Janus
 
 			var styleImageManager = serviceProvider.GetService<IStyleImageManager>();
 			if (styleImageManager != null)
-				Icon = styleImageManager.GetImage("log", StyleImageType.Small).ToIcon();
+				Icon = styleImageManager.GetIcon("log", StyleImageType.Small);
 
 			_stripMenuGenerator = new StripMenuGenerator(serviceProvider, _toolStrip, "Janus.Log.Toolbar");
 

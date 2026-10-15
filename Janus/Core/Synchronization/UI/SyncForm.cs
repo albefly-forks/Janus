@@ -17,12 +17,9 @@ namespace Rsdn.Janus
 		private const int _errorHeight = 580;
 		private const string _skippedTextSubst = "-//-";
 
-		private readonly ImageList _taskStateImages = new ImageList();
+		private readonly DpiImageList _taskStateImages = new DpiImageList();
 		private readonly Dictionary<SyncTaskState, int> _taskStateImageIndexes;
-		private readonly Image _pinOpenImage;
-		private readonly Image _pinCloseImage;
-		private readonly Image _warningIcon;
-		private readonly Image _errorIcon;
+		private readonly IStyleImageManager _styler;
 
 		private readonly string _emptyCaption;
 		private string _progressText;
@@ -34,36 +31,33 @@ namespace Rsdn.Janus
 		public SyncForm(IServiceProvider provider)
 		{
 			var styler = provider.GetRequiredService<IStyleImageManager>();
-			_pinOpenImage = styler.GetImage(@"Sync\DrawingPinOpen", StyleImageType.ConstSize);
-			_pinCloseImage = styler.GetImage(@"Sync\DrawingPinClosed", StyleImageType.ConstSize);
-			_warningIcon = styler.GetImage(@"WarningIcon", StyleImageType.ConstSize);
-			_errorIcon = styler.GetImage(@"ErrorIcon", StyleImageType.ConstSize);
-
-			_taskStateImages.ColorDepth = ColorDepth.Depth32Bit;
+			_styler = styler;
 
 			_taskStateImageIndexes = new Dictionary<SyncTaskState, int>
 				{
 					{
 						SyncTaskState.WaitForSync,
-						styler.AppendImage(@"Sync\TaskState_WaitForSync", StyleImageType.ConstSize, _taskStateImages)
+						_taskStateImages.Add(styler, @"Sync\TaskState_WaitForSync", StyleImageType.ConstSize)
 					},
 					{
 						SyncTaskState.Sync,
-						styler.AppendImage(@"Sync\TaskState_Sync", StyleImageType.ConstSize, _taskStateImages)
+						_taskStateImages.Add(styler, @"Sync\TaskState_Sync", StyleImageType.ConstSize)
 					},
 					{
 						SyncTaskState.Succeed,
-						styler.AppendImage(@"Sync\TaskState_Succeed", StyleImageType.ConstSize, _taskStateImages)
+						_taskStateImages.Add(styler, @"Sync\TaskState_Succeed", StyleImageType.ConstSize)
 					},
 					{
 						SyncTaskState.Failed,
-						styler.AppendImage(@"Sync\TaskState_Failed", StyleImageType.ConstSize, _taskStateImages)
+						_taskStateImages.Add(styler, @"Sync\TaskState_Failed", StyleImageType.ConstSize)
 					},
 				};
 
 			_asyncOp = AsyncOperationManager.CreateOperation(null);
 
 			InitializeComponent();
+			DpiHelper.EnableColumnScalingForChildren(this);
+			DesignerImages.Apply(this);
 			CustomInitializeComponent();
 			_emptyCaption = Text;
 		}
@@ -105,12 +99,13 @@ namespace Rsdn.Janus
 
 		private void CustomInitializeComponent()
 		{
-			_syncTaskList.SmallImageList = _taskStateImages;
+			_syncTaskList.SmallImageList = _taskStateImages.AttachTo(_syncTaskList).ImageList;
 			_pinCheck.Checked = Config.Instance.SyncWindowPinned;
+			UpdatePinImage();
 			_splitContainer.Panel2Collapsed = true;
 			_errorsGrid.AutoGenerateColumns = false;
 			_errorsGrid.DataSource = _errors;
-			Height = _normalHeight;
+			Height = LogicalToDeviceUnits(_normalHeight);
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)
@@ -144,9 +139,26 @@ namespace Rsdn.Janus
 			}
 		}
 
+		private Image GetDpiImage(string name)
+		{
+			return _styler.GetImage(name, StyleImageType.ConstSize, DeviceDpi);
+		}
+
+		private void UpdatePinImage()
+		{
+			_pinCheck.Image = GetDpiImage(_pinCheck.Checked ? @"Sync\DrawingPinClosed" : @"Sync\DrawingPinOpen");
+		}
+
+		protected override void OnDpiChanged(DpiChangedEventArgs e)
+		{
+			base.OnDpiChanged(e);
+			UpdatePinImage();
+			_errorsGrid.Invalidate();
+		}
+
 		private void PinCheckCheckedChanged(object sender, EventArgs e)
 		{
-			_pinCheck.Image = _pinCheck.Checked ? _pinCloseImage : _pinOpenImage;
+			UpdatePinImage();
 			IsPinned = _pinCheck.Checked;
 			Config.Instance.SyncWindowPinned = IsPinned;
 		}
@@ -237,10 +249,10 @@ namespace Rsdn.Janus
 				switch ((SyncErrorType)e.Value)
 				{
 					case SyncErrorType.Warning:
-						e.Value = _warningIcon;
+						e.Value = GetDpiImage(@"WarningIcon");
 						break;
 					case SyncErrorType.CriticalError:
-						e.Value = _errorIcon;
+						e.Value = GetDpiImage(@"ErrorIcon");
 						break;
 					default:
 						e.Value = null;
@@ -260,7 +272,7 @@ namespace Rsdn.Janus
 					if (!_errorMode)
 					{
 						_splitContainer.Panel2Collapsed = false;
-						Height = _errorHeight;
+						Height = LogicalToDeviceUnits(_errorHeight);
 						_copyButton.Visible = true;
 						_errorMode = true;
 					}

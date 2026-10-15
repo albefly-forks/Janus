@@ -20,6 +20,8 @@ namespace Rsdn.Janus
 		{
 			_provider = provider;
 			InitializeComponent();
+			DpiHelper.EnableColumnScalingForChildren(this);
+			DesignerImages.Apply(this);
 
 			CustomInitializeComponent();
 		}

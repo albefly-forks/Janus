@@ -14,6 +14,7 @@ namespace Rsdn.Janus
 		public ExpectedMessageClickedForm()
 		{
 			InitializeComponent();
+			DesignerImages.Apply(this);
 		}
 
 		public bool OpenInBrowser

@@ -203,6 +203,8 @@
 			// 
 			// MarkMsgReadForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = btnOk;
 			resources.ApplyResources(this, "$this");
 			this.CancelButton = btnCancel;

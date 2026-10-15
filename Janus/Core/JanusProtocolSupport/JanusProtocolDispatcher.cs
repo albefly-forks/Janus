@@ -1,9 +1,12 @@
 ﻿#pragma warning disable 1692
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Mime;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 using CodeJam.Services;
 
@@ -93,6 +96,58 @@ namespace Rsdn.Janus
 
 		#endregion
 
+		#region High DPI
+
+		/// <summary>
+		/// DPI, для которого отдаются картинки страниц. Браузер масштабирует страницы
+		/// под системный DPI (см. <see cref="DpiHelper.EnableWebBrowserDpiScaling"/>).
+		/// </summary>
+		private static int HtmlImageDpi => DpiHelper.SystemDpi;
+
+		private static readonly Regex _imgTagRx = new Regex(
+			@"<img\b[^>]*?\bsrc\s*=\s*(?<q>['""])(?<src>.*?)\k<q>[^>]*>",
+			RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+
+		private static readonly Regex _imgSizeAttrRx = new Regex(
+			@"\b(?:width|height)\s*[=:]",
+			RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+		private Resource CreateHtmlResource(string html)
+		{
+			return new Resource(_mimeTypeHtml, AddImageSizes(html));
+		}
+
+		/// <summary>
+		/// Картинки страниц отдаются в разрешении монитора, поэтому их размер на странице
+		/// задается явно - в логических пикселях, иначе браузер покажет их увеличенными.
+		/// </summary>
+		private string AddImageSizes(string html)
+		{
+			if (string.IsNullOrEmpty(html) || HtmlImageDpi <= DpiHelper.LogicalDpi)
+				return html;
+
+			var imagePrefix = JanusProtocolInfo.FormatURI(JanusProtocolResourceType.Image, string.Empty);
+			var styleImageManager = _serviceProvider.GetRequiredService<IStyleImageManager>();
+			return _imgTagRx.Replace(
+				html,
+				m =>
+				{
+					var src = m.Groups["src"].Value;
+					if (!src.StartsWith(imagePrefix, StringComparison.OrdinalIgnoreCase)
+							|| _imgSizeAttrRx.IsMatch(m.Value))
+						return m.Value;
+
+					var image = styleImageManager.GetImage(src.Substring(imagePrefix.Length));
+					if (image == null)
+						return m.Value;
+
+					// Сразу после "<img"
+					return m.Value.Insert(4, $" width=\"{image.Width}\" height=\"{image.Height}\"");
+				});
+		}
+
+		#endregion
+
 		public JanusProtocolDispatcher(IServiceProvider serviceProvider)
 		{
 			_serviceProvider = serviceProvider;
@@ -177,7 +232,7 @@ namespace Rsdn.Janus
 			}
 			catch (Exception e)
 			{
-				return new Resource(_mimeTypeHtml, HtmlPageBuilder.GetExceptionMessage(uri, e));
+				return CreateHtmlResource(HtmlPageBuilder.GetExceptionMessage(uri, e));
 			}
 		}
 
@@ -205,100 +260,99 @@ namespace Rsdn.Janus
 		private void MessageEventHandler(object sender, JanusProtocolEventArgs e)
 		{
 			//e.Response = _pageBuilder.GetMessageText(e.Id);
-			e.Response = new Resource(_mimeTypeHtml, _xmlPageBuilder.GetMessageText(e.Id));
+			e.Response = CreateHtmlResource(_xmlPageBuilder.GetMessageText(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceMessageAbsent)]
 		private void MessageAbsentEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, HtmlPageBuilder.GetAbsentMessageText(_serviceProvider, e.Id));
+			e.Response = CreateHtmlResource(HtmlPageBuilder.GetAbsentMessageText(_serviceProvider, e.Id));
 		}
 		
 		[JanusProtocolEventHandler(_resourceMessageRate)]
 		private void MessageRateEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetMessageRate(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetMessageRate(e.Id));
 		}
 		
 		[JanusProtocolEventHandler(_resourceOutboxPreview)]
 		private void OutboxPreviewEventHandler(object sender, JanusProtocolEventArgs e)
 		{
 			e.Response =
-				new Resource(
-					_mimeTypeHtml,
-					OutboxManager.GetPreviewData(e.Id));
+				CreateHtmlResource(OutboxManager.GetPreviewData(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceStyle)]
 		private void StyleEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, HtmlPageBuilder.GetNamedStyle(e.Parameters));
+			e.Response = CreateHtmlResource(HtmlPageBuilder.GetNamedStyle(e.Parameters));
 		}
 		
 		[JanusProtocolEventHandler(_resourceTeamList)]
 		private void TeamListEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, HtmlPageBuilder.GetTeamList(_serviceProvider));
+			e.Response = CreateHtmlResource(HtmlPageBuilder.GetTeamList(_serviceProvider));
 		}
 		
 		[JanusProtocolEventHandler(_resourceUserInfo)]
 		private void UserInfoEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetUserInfoText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetUserInfoText(e.Id));
 		}
 		
 		[JanusProtocolEventHandler(_resourceUserMessages)]
 		private void UserMessagesEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetUserMessagesText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetUserMessagesText(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceUserMessagesStat)]
 		private void UserMessagesStatEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetUserMessagesStatText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetUserMessagesStatText(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceUserRating)]
 		private void UserRatingEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetUserRatingText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetUserRatingText(e.Id));
 		}
 		
 		[JanusProtocolEventHandler(_resourceUserOutrating)]
 		private void UserOutratingEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetUserOutratingText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetUserOutratingText(e.Id));
 		}
 		
 		[JanusProtocolEventHandler(_resourceArticleList)]
 		private void ArticleEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetArticleListText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetArticleListText(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceFaq)]
 		private void FaqEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _xmlPageBuilder.GetMessageText(e.Parameters));
+			e.Response = CreateHtmlResource(_xmlPageBuilder.GetMessageText(e.Parameters));
 		}
 
 		[JanusProtocolEventHandler(_resourceFaqList)]
 		private void FaqListEventHandler(object sender, JanusProtocolEventArgs e)
 		{
-			e.Response = new Resource(_mimeTypeHtml, _pageBuilder.GetFaqListText(e.Id));
+			e.Response = CreateHtmlResource(_pageBuilder.GetFaqListText(e.Id));
 		}
 
 		[JanusProtocolEventHandler(_resourceImage)]
 		private void ImageEventHandler(object sender, JanusProtocolEventArgs e)
 		{
 			var styleImageManager = _serviceProvider.GetRequiredService<IStyleImageManager>();
-			var img = styleImageManager.GetImage(e.Parameters);
+			var img = styleImageManager.GetImage(e.Parameters, HtmlImageDpi);
 			using (var ms = new MemoryStream())
 			{
-				var ifi = ImageFormatInfo.FromImageFormat(img.RawFormat);
-				img.Save(ms, img.RawFormat);
-				e.Response = new Resource(ifi.MimeType, ms.ToArray());
+				// GIF сохраняется как есть (анимация), остальное, в т.ч. отмасштабированные картинки, - в PNG
+				var format = img.RawFormat.Equals(ImageFormat.Gif) ? ImageFormat.Gif : ImageFormat.Png;
+				img.Save(ms, format);
+				e.Response = new Resource(ImageFormatInfo.FromImageFormat(format).MimeType, ms.ToArray());
 			}
 		}
 		#endregion

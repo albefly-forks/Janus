@@ -124,6 +124,8 @@
 			// 
 			// ComponentCollectionEditorForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			resources.ApplyResources(this, "$this");
 			this.CancelButton = this._CancelButton;
 			this.Controls.Add(this._panel1);

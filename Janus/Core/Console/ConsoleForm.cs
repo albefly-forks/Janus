@@ -50,7 +50,7 @@ namespace Rsdn.Janus
 
 			var styleImageManager = _provider.GetService<IStyleImageManager>();
 			if (styleImageManager != null)
-				Icon = styleImageManager.TryGetImage("console", StyleImageType.Small).ToIcon();
+				Icon = styleImageManager.GetIcon("console", StyleImageType.Small);
 
 			_toolbarGenerator = new StripMenuGenerator(_provider, _toolStrip, "Janus.Console.Toolbar");
 

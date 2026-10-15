@@ -72,6 +72,8 @@
 			// 
 			// FavoritesFolderForm
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AcceptButton = this._okBtn;
 			this.CancelButton = this._cancelBtn;
 			resources.ApplyResources(this, "$this");

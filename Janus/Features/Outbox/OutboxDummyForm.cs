@@ -41,7 +41,7 @@ namespace Rsdn.Janus
 			MessageForm.MessageSent += MessageSent;
 
 			_grid.Indent = Config.Instance.ForumDisplayConfig.GridIndent;
-			_grid.SmallImageList = OutboxImageManager.ImageList;
+			_grid.SmallImageList = OutboxImageManager.ImageList.AttachTo(_grid).ImageList;
 		}
 
 		/// <summary> 

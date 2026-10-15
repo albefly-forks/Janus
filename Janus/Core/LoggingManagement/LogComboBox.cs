@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using Rsdn.Janus.Framework;
@@ -10,11 +11,28 @@ namespace Rsdn.Janus
 	/// </summary>
 	public class LogComboBox : ComboListBox
 	{
-		private Size _iconSize = new Size(16, 16);
+		private Size _iconSize => new Size(LogicalToDeviceUnits(16), LogicalToDeviceUnits(16));
 
 		public LogComboBox()
 		{
-			ItemHeight = _iconSize.Height + 2;
+			UpdateItemHeight();
+		}
+
+		private void UpdateItemHeight()
+		{
+			ItemHeight = _iconSize.Height + LogicalToDeviceUnits(2);
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+			UpdateItemHeight();
+		}
+
+		protected override void OnDpiChangedAfterParent(EventArgs e)
+		{
+			base.OnDpiChangedAfterParent(e);
+			UpdateItemHeight();
 		}
 		
 		public void AddItem(object sender, LogEventArgs e)
@@ -55,7 +73,7 @@ namespace Rsdn.Janus
 				new Rectangle(b.X + 1, b.Y + 1, _iconSize.Width, _iconSize.Height));
 
 			e.Graphics.DrawString(item.Message, Font, new SolidBrush(tc),
-				b.X + _iconSize.Width + 3, b.Y + 1);
+				b.X + _iconSize.Width + LogicalToDeviceUnits(3), b.Y + 1);
 		}
 
 		#endregion

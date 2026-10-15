@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 using CodeJam;
 using CodeJam.Extensibility;
@@ -16,14 +17,20 @@ namespace Rsdn.Janus
 	public class NotifyIconActivePart : ActivePartBase
 	{
 		private static readonly Icon _trayIconEmpty =
-			typeof(NotifyIconActivePart).Assembly.LoadIcon(
-				ApplicationInfo.ResourcesNamespace + "JanusSmall.ico");
+			LoadTrayIcon("JanusSmall.ico");
 		private static readonly Icon _trayIconNew =
-			typeof(NotifyIconActivePart).Assembly.LoadIcon(
-				ApplicationInfo.ResourcesNamespace + "JanusSmallNew.ico");
+			LoadTrayIcon("JanusSmallNew.ico");
 		private static readonly Icon _trayIconMeUnread =
-			typeof(NotifyIconActivePart).Assembly.LoadIcon(
-				ApplicationInfo.ResourcesNamespace + "JanusSmallMe.ico");
+			LoadTrayIcon("JanusSmallMe.ico");
+
+		/// <summary>
+		/// Иконка в размере значка области уведомлений (в .ico есть кадры для всех масштабов).
+		/// </summary>
+		private static Icon LoadTrayIcon(string name)
+		{
+			using (var icon = typeof(NotifyIconActivePart).Assembly.LoadIcon(ApplicationInfo.ResourcesNamespace + name))
+				return new Icon(icon, SystemInformation.SmallIconSize);
+		}
 
 		private readonly INotifyIconService _notifyIconService;
 		private readonly IForumsAggregatesService _forumsAggregatesService;

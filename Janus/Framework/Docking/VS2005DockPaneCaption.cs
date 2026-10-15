@@ -69,7 +69,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (_imageButtonClose == null)
-					_imageButtonClose = Resources.DockPane_Close;
+					_imageButtonClose = DpiResources.Get("DockPane_Close");
 
 				return _imageButtonClose;
 			}
@@ -98,7 +98,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (_imageButtonAutoHide == null)
-					_imageButtonAutoHide = Resources.DockPane_AutoHide;
+					_imageButtonAutoHide = DpiResources.Get("DockPane_AutoHide");
 
 				return _imageButtonAutoHide;
 			}
@@ -110,7 +110,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (_imageButtonDock == null)
-					_imageButtonDock = Resources.DockPane_Dock;
+					_imageButtonDock = DpiResources.Get("DockPane_Dock");
 
 				return _imageButtonDock;
 			}
@@ -139,7 +139,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get
 			{
 				if (_imageButtonOptions == null)
-					_imageButtonOptions = Resources.DockPane_Option;
+					_imageButtonOptions = DpiResources.Get("DockPane_Option");
 
 				return _imageButtonOptions;
 			}
@@ -186,54 +186,54 @@ namespace WeifenLuo.WinFormsUI.Docking
 			base.Dispose(disposing);
 		}
 
-		private static int TextGapTop
+		private int TextGapTop
 		{
-			get { return _TextGapTop; }
+			get { return LogicalToDeviceUnits(_TextGapTop); }
 		}
 
 		public Font TextFont
 		{
-			get { return DockPane.DockPanel.Skin.DockPaneStripSkin.TextFont; }
+			get { return Rsdn.Janus.DpiHelper.GetFontForDpi(DockPane.DockPanel.Skin.DockPaneStripSkin.TextFont, DeviceDpi); }
 		}
 
-		private static int TextGapBottom
+		private int TextGapBottom
 		{
-			get { return _TextGapBottom; }
+			get { return LogicalToDeviceUnits(_TextGapBottom); }
 		}
 
-		private static int TextGapLeft
+		private int TextGapLeft
 		{
-			get { return _TextGapLeft; }
+			get { return LogicalToDeviceUnits(_TextGapLeft); }
 		}
 
-		private static int TextGapRight
+		private int TextGapRight
 		{
-			get { return _TextGapRight; }
+			get { return LogicalToDeviceUnits(_TextGapRight); }
 		}
 
-		private static int ButtonGapTop
+		private int ButtonGapTop
 		{
-			get { return _ButtonGapTop; }
+			get { return LogicalToDeviceUnits(_ButtonGapTop); }
 		}
 
-		private static int ButtonGapBottom
+		private int ButtonGapBottom
 		{
-			get { return _ButtonGapBottom; }
+			get { return LogicalToDeviceUnits(_ButtonGapBottom); }
 		}
 
-		private static int ButtonGapLeft
+		private int ButtonGapLeft
 		{
-			get { return _ButtonGapLeft; }
+			get { return LogicalToDeviceUnits(_ButtonGapLeft); }
 		}
 
-		private static int ButtonGapRight
+		private int ButtonGapRight
 		{
-			get { return _ButtonGapRight; }
+			get { return LogicalToDeviceUnits(_ButtonGapRight); }
 		}
 
-		private static int ButtonGapBetween
+		private int ButtonGapBetween
 		{
-			get { return _ButtonGapBetween; }
+			get { return LogicalToDeviceUnits(_ButtonGapBetween); }
 		}
 
 		private static string _toolTipClose;
@@ -318,8 +318,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 		{
 			int height = TextFont.Height + TextGapTop + TextGapBottom;
 
-			if (height < ButtonClose.Image.Height + ButtonGapTop + ButtonGapBottom)
-				height = ButtonClose.Image.Height + ButtonGapTop + ButtonGapBottom;
+			if (height < ButtonClose.ScaledImage.Height + ButtonGapTop + ButtonGapBottom)
+				height = ButtonClose.ScaledImage.Height + ButtonGapTop + ButtonGapBottom;
 
 			return height;
 		}
@@ -426,8 +426,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 		{
 			// set the size and location for close and auto-hide buttons
 			Rectangle rectCaption = ClientRectangle;
-			int buttonWidth = ButtonClose.Image.Width;
-			int buttonHeight = ButtonClose.Image.Height;
+			int buttonWidth = ButtonClose.ScaledImage.Width;
+			int buttonHeight = ButtonClose.ScaledImage.Height;
 			int height = rectCaption.Height - ButtonGapTop - ButtonGapBottom;
 			if (buttonHeight < height)
 			{

@@ -33,7 +33,7 @@ namespace Rsdn.Janus
 				new TextMacros(
 					"release",
 					SimpleMacrosResources.ApplicationRelease,
-					serviceProvider => ApplicationInfo.Release),
+					serviceProvider => ApplicationInfo.FullVersion),
 				new TextMacros(
 					"revision",
 					SimpleMacrosResources.ApplicationRevision,

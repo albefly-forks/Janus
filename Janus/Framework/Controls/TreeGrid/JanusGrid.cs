@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 using Rsdn.TreeGrid;
@@ -37,7 +39,8 @@ namespace Rsdn.Janus
 
 		#region ColumnsWidth property
 		/// <summary>
-		/// Ширины колонок.
+		/// Ширины колонок в логических единицах (96 DPI) - в таком виде они
+		/// сохраняются в настройках и одинаково подходят для мониторов с любым DPI.
 		/// </summary>
 		[Browsable(false)]
 		public int[] ColumnsWidth
@@ -46,13 +49,13 @@ namespace Rsdn.Janus
 			{
 				var res = new int[Columns.Count];
 				for (var i = 0; i < res.Length; i++)
-					res[i] = Columns[i].Width;
+					res[i] = Columns[i].Width * DpiHelper.LogicalDpi / _metricsDpi;
 				return res;
 			}
 			set
 			{
 				for (var i = 0; i < value.Length && i < Columns.Count; i++)
-					Columns[i].Width = value[i];
+					Columns[i].Width = value[i] * _metricsDpi / DpiHelper.LogicalDpi;
 			}
 		}
 		#endregion
@@ -125,11 +128,84 @@ namespace Rsdn.Janus
 		}
 		#endregion
 
+		#region High DPI
+		// DPI, для которого отмасштабирован значок +/-
+		private int _metricsDpi = DpiHelper.LogicalDpi;
+		private int _logicalIndent = 5;
+
+		/// <summary>
+		/// Отступ уровня дерева в логических единицах (96 DPI).
+		/// </summary>
+		[DefaultValue(5)]
+		public new int Indent
+		{
+			get { return _logicalIndent; }
+			set
+			{
+				_logicalIndent = value;
+				base.Indent = DpiHelper.Scale(value, DeviceDpi);
+			}
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+			UpdateDpiMetrics();
+		}
+
+		protected override void OnDpiChangedAfterParent(EventArgs e)
+		{
+			base.OnDpiChangedAfterParent(e);
+			UpdateDpiMetrics();
+		}
+
+		protected override void OnParentChanged(EventArgs e)
+		{
+			base.OnParentChanged(e);
+			UpdateDpiMetrics();
+		}
+
+		private void UpdateDpiMetrics()
+		{
+			var dpi = DeviceDpi;
+			if (dpi == _metricsDpi)
+				return;
+
+			base.Indent = DpiHelper.Scale(_logicalIndent, dpi);
+			ScalePlusMinusGlyph(dpi);
+			// Автомасштабирование WinForms ширины колонок не трогает
+			foreach (ColumnHeader column in Columns)
+				if (column.Width > 0)
+					column.Width = column.Width * dpi / _metricsDpi;
+			_metricsDpi = dpi;
+			Invalidate();
+		}
+
+		private static readonly FieldInfo _plusMinusImagesField =
+			typeof(TreeGrid.TreeGrid).GetField("_plusMinusImages", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		/// <summary>
+		/// Размер значка +/- в TreeGrid берется из его закрытого списка картинок,
+		/// а сам значок рисуется темой Windows в этот прямоугольник.
+		/// </summary>
+		private void ScalePlusMinusGlyph(int dpi)
+		{
+			var images = _plusMinusImagesField?.GetValue(this) as ImageList;
+			if (images == null)
+				return;
+			var size = images.ImageSize;
+			images.ImageSize = new Size(size.Width * dpi / _metricsDpi, size.Height * dpi / _metricsDpi);
+		}
+		#endregion
+
 		#region Overridden methods
 		protected override NodeDrawData RetrieveData(ITreeNode node)
 		{
 			var config = Config.Instance.ForumDisplayConfig;
-			var nodeDrawData = base.RetrieveData(node);
+			NodeDrawData nodeDrawData;
+			// Узлы берут картинки у менеджеров картинок, не зная, в каком гриде показываются
+			using (ImageDpiScope.Enter(DeviceDpi))
+				nodeDrawData = base.RetrieveData(node);
 
 
 			if (!config.HighlightParentMessage && !config.HighlightChildMessages)
